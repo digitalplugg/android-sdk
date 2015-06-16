@@ -5,21 +5,20 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mixrad.mixradiosdk.Util.ArtistDeserializer;
+import io.mixrad.mixradiosdk.Util.ArtistSerializer;
+import io.mixrad.mixradiosdk.Util.MusicItemDeserializer;
+import io.mixrad.mixradiosdk.Util.ProductDeserializer;
 import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Category;
 import io.mixrad.mixradiosdk.model.Genre;
@@ -30,8 +29,8 @@ import io.mixrad.mixradiosdk.model.Product;
 import io.mixrad.mixradiosdk.model.UserEvent;
 import retrofit.Callback;
 import retrofit.RestAdapter;
+import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
-import retrofit.http.Query;
 
 /**
  * Created by RichardW on 05/03/15.
@@ -40,9 +39,15 @@ public class MixRadioClient {
 
 
     private static final String BASE_URL = "http://api.mixrad.io/1.x";
+    private static final String SECURE_URL = "https://sapi.mixrad.io/1.x";
     private final MixRadioService apiService;
+    private final MixRadioService secureApiService;
 
     public MixRadioClient(String apiKey, String countryCode) {
+
+
+
+
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
                 .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
@@ -52,26 +57,37 @@ public class MixRadioClient {
                 .registerTypeAdapter(Product.class, new ProductDeserializer())
                 .create();
 
-        GsonConverter convertor = new GsonConverter(gson);
+        GsonConverter converter = new GsonConverter(gson);
         MixRadioInterceptor intercept = new MixRadioInterceptor();
         intercept.setApiKey(apiKey);
         intercept.setCountryCode(countryCode);
 
+        MixRadioUserInterceptor userIntercept = new MixRadioUserInterceptor();
+        userIntercept.setUserId("");
+
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setEndpoint(BASE_URL)
-                .setConverter(convertor)
+                .setConverter(converter)
                 .setRequestInterceptor(intercept)
                 .build();
 
+        RestAdapter secureRestAdapter = new RestAdapter.Builder()
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setEndpoint(SECURE_URL)
+                .setConverter(converter)
+                .setRequestInterceptor(userIntercept)
+                .build();
+
         apiService = restAdapter.create(MixRadioService.class);
+        secureApiService = secureRestAdapter.create(MixRadioService.class);
     }
 
     public MixRadioService getApiService() {
         return apiService;
     }
 
-    public void searchAsync(String searchTerm, Category category, String genreId, String orderBy, String sortOrder, int startIndex, int itemsPerPage, Callback<List<MusicItem>> callback) {
+    public void search(String searchTerm, Category category, String genreId, String orderBy, String sortOrder, int startIndex, int itemsPerPage, Callback<List<MusicItem>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         options.put("q", searchTerm);
         options.put("category", category.toString());
@@ -80,100 +96,107 @@ public class MixRadioClient {
         options.put("sortOrder", sortOrder);
         options.put("startIndex", ""+startIndex);
         options.put("itemsPerPage", ""+itemsPerPage);
-        apiService.searchAsync(options,callback);
+        apiService.search(options, callback);
     }
 
-    public void searchArtistsAsync(String searchTerm, int startIndex, int itemsPerPage, Callback<List<Artist>> callback) {
+    public void searchArtists(String searchTerm, int startIndex, int itemsPerPage, Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         options.put("q", searchTerm);
         options.put("startIndex", ""+startIndex);
         options.put("itemsPerPage", ""+itemsPerPage);
-        apiService.searchArtistsAsync(options,callback);
+        apiService.searchArtists(options, callback);
     }
 
-    public void getTopArtistsAsync(Callback<List<Artist>> callback) {
-        getTopArtistsAsync(0, 20, callback);
+    public void getTopArtists(Callback<List<Artist>> callback) {
+        getTopArtists(0, 20, callback);
     }
-    public void getTopArtistsAsync(int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
+    public void getTopArtists(int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
+        options.put("category",Category.ARTIST.toString());
 
-        apiService.getTopArtistsAsync(options, callback);
+        apiService.getTopArtists(options, callback);
     }
 
-    public void getTopProductsAsync(Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getTopProducts(Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getTopProductsAsync(category,options, callback);
+        apiService.getTopProducts(category, options, callback);
     }
 
-    public void getNewReleasesAsync(Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getNewReleases(Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
-        options.put("category", category.toString());
+
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getNewReleasesAsync(options, callback);
+        apiService.getNewReleases(category, options, callback);
     }
 
-    public void getNewReleasesForGenreAsync(String id, Genre genre,Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getNewReleasesForGenre(String id, Genre genre,Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
+        String genre_id = "";
+        if(id != null && !id.equals("")) {
+            genre_id = id;
+        } else if(genre != null) {
+            genre_id = genre.id;
+        }
+        //options.put("category", category.toString());
+        options.put("startIndex", ""+startIndex);
+
+        options.put("itemsPerPage", ""+itemsPerPage);
+
+
+        apiService.getNewReleasesForGenre(genre_id, category,options, callback);
+    }
+
+    public void getGenres(Callback<List<Genre>> callback) {
+
+
+        apiService.getGenres(callback);
+    }
+
+    public void getTopArtistsForGenre(String id, Genre genre, int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
+        Map<String, String> options = new HashMap<String, String>();
+
         if(id != null && !id.equals("")) {
             options.put("id", id);
         } else if(genre != null) {
             options.put("genre",""+genre.id);
+        }
+        options.put("startIndex", ""+startIndex);
+
+        options.put("itemsPerPage", ""+itemsPerPage);
+
+        options.put("category", Category.ARTIST.toString());
+
+        apiService.getTopArtistsForGenre(options, callback);
+    }
+
+    public void getTopProductsForGenre(String id, Genre genre,Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+        Map<String, String> options = new HashMap<String, String>();
+        String genre_id = "";
+        if(id != null && !id.equals("")) {
+            genre_id = id;
+        } else if(genre != null) {
+            genre_id = genre.id;
         }
         options.put("category", category.toString());
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getNewReleasesForGenreAsync(options, callback);
+        apiService.getTopProductsForGenre(genre_id, category,options, callback);
     }
 
-    public void getGenresAsync(Callback<List<Genre>> callback) {
-
-
-        apiService.getGenresAsync(callback);
-    }
-
-    public void getTopArtistsForGenreAsync(String id, Genre genre, int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
-        Map<String, String> options = new HashMap<String, String>();
-        if(id != null && !id.equals("")) {
-            options.put("id", id);
-        } else if(genre != null) {
-            options.put("genre",""+genre.id);
-        }
-        options.put("startIndex", ""+startIndex);
-
-        options.put("itemsPerPage", ""+itemsPerPage);
-
-        apiService.getTopArtistsForGenreAsync(options, callback);
-    }
-
-    public void getTopProductsForGenreAsync(String id, Genre genre,Category category, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
-        Map<String, String> options = new HashMap<String, String>();
-        if(id != null && !id.equals("")) {
-            options.put("id", id);
-        } else if(genre != null) {
-            options.put("genre",""+genre.id);
-        }
-        options.put("category", category.toString());
-        options.put("startIndex", ""+startIndex);
-
-        options.put("itemsPerPage", ""+itemsPerPage);
-
-        apiService.getTopProductsForGenreAsync(options, callback);
-    }
-
-    public void getArtistProductsAsync(String id, Artist artist,Category category, String orderBy, String sortOrder, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getArtistProducts(String id, Artist artist,Category category, String orderBy, String sortOrder, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         String artist_id = "";
         if(id != null && !id.equals("")) {
@@ -188,11 +211,11 @@ public class MixRadioClient {
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getArtistProductsAsync(artist_id, options, callback);
+        apiService.getArtistProducts(artist_id, options, callback);
     }
 
 
-    public void getSimilarArtistsAsync(String id, Artist artist, int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
+    public void getSimilarArtists(String id, Artist artist, int startIndex,int itemsPerPage,Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         String artist_id = "";
         if(id != null && !id.equals("")) {
@@ -204,20 +227,20 @@ public class MixRadioClient {
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getSimilarArtistsAsync(artist_id,options, callback);
+        apiService.getSimilarArtists(artist_id, options, callback);
     }
 
-    public void getMixGroupsAsync(int startIndex,int itemsPerPage,Callback<List<MixGroup>> callback) {
+    public void getMixGroups(int startIndex,int itemsPerPage,Callback<List<MixGroup>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getMixGroupsAsync(options, callback);
+        apiService.getMixGroups(options, callback);
     }
 
 
-    public void getMixesAsync(String id, MixGroup group,int startIndex,int itemsPerPage,Callback<List<MixClass>> callback) {
+    public void getMixes(String id, MixGroup group,int startIndex,int itemsPerPage,Callback<List<MixClass>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         String group_id = "";
         if(id != null && !id.equals("")) {
@@ -230,55 +253,52 @@ public class MixRadioClient {
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getMixesAsync(group_id,options, callback);
+        apiService.getMixes(group_id, options, callback);
     }
 
-    public void getArtistSearchSuggestionsAsync(String searchTerm, int itemsPerPage,Callback<List<String>> callback) {
+    public void getArtistSearchSuggestions(String searchTerm, int itemsPerPage,Callback<List<String>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("searchTerm", ""+searchTerm);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getArtistSearchSuggestionsAsync(options, callback);
+        apiService.getArtistSearchSuggestions(options, callback);
     }
 
-    public void getSearchSuggestionsAsync(String searchTerm, int itemsPerPage,Callback<List<String>> callback) {
+    public void getSearchSuggestions(String searchTerm, int itemsPerPage,Callback<List<String>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("q", ""+searchTerm);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getSearchSuggestionsAsync(options, callback);
+        apiService.getSearchSuggestions(options, callback);
     }
 
-    public void getArtistsAroundLocationAsync(double latitude, double longitude, int maxDistance, int startIndex, int itemsPerPage,Callback<List<Artist>> callback) {
+    public void getArtistsAroundLocation(double latitude, double longitude, int maxDistance, int startIndex, int itemsPerPage,Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
-        options.put("latitude", ""+latitude);
-        options.put("longitude", ""+longitude);
+        options.put("location", ""+latitude+","+longitude);
         options.put("maxDistance", ""+maxDistance);
         options.put("startIndex", ""+startIndex);
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getArtistsAroundLocationAsync(options, callback);
+        apiService.getArtistsAroundLocation(options, callback);
     }
 
 
-    public void getSimilarProductsAsync(String id, Product product, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getSimilarProducts(String id, Product product, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
-        if(id != null && !id.equals("")) {
-            options.put("id", id);
-        } else if(product != null) {
-            options.put("product",""+product.id);
+        if((id == null || id.equals("")) && product!=null) {
+            id = product.id;
         }
 
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getSimilarProductsAsync(options, callback);
+        apiService.getSimilarProducts(id, options, callback);
     }
 
     public Uri getTrackSampleUri(String id) {
@@ -286,7 +306,7 @@ public class MixRadioClient {
         return apiService.getTrackSampleUri(id);
     }
 
-    public void getUserPlayHistoryAsync(String action,  int startIndex,int itemsPerPage,Callback<List<UserEvent>> callback) {
+    public void getUserPlayHistory(String action,  int startIndex,int itemsPerPage,Callback<List<UserEvent>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("action", ""+action);
@@ -294,170 +314,44 @@ public class MixRadioClient {
 
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getUserPlayHistoryAsync(options, callback);
+        secureApiService.getUserPlayHistory(options, callback);
     }
 
-    public void getUserTopArtistsAsync(String startDate, String endDate,int itemsPerPage,Callback<List<Artist>> callback) {
+    public void getUserTopArtists(String startDate, String endDate,int itemsPerPage,Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("startDate", ""+startDate);
         options.put("endDate", ""+endDate);
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getUserTopArtistsAsync(options, callback);
+        secureApiService.getUserTopArtists(options, callback);
     }
 
-    public void getUserRecentMixesAsync(String startDate, String endDate,int itemsPerPage,Callback<List<MixClass>> callback) {
+    public void getUserRecentMixes(String userid, String startDate, String endDate,int itemsPerPage,Callback<List<MixClass>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("startDate", ""+startDate);
         options.put("endDate", ""+endDate);
         options.put("itemsPerPage", ""+itemsPerPage);
 
-        apiService.getUserRecentMixesAsync(options, callback);
+        secureApiService.getUserRecentMixes(options, callback);
     }
 
+    public String getAuthenticationUri(String scope, String state) {
 
-    public class MusicItemDeserializer implements JsonDeserializer<MusicItem> {
-        public MusicItem deserialize(JsonElement artistStr, Type typeOfSrc, JsonDeserializationContext context) {
-            MusicItem musicItem = new MusicItem();
-            JsonObject artist_obj = artistStr.getAsJsonObject();
-
-            musicItem.name = artist_obj.get("name").getAsString();
-            musicItem.id = artist_obj.get("id").getAsString();
-
-            if (artist_obj.has("thumbnails")) {
-                JsonObject thumbnails = artist_obj.get("thumbnails").getAsJsonObject();
-
-                musicItem.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-                musicItem.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-                musicItem.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-                musicItem.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-            }
+        return SECURE_URL+"/authorize?response_type=code&state="+state+"&scope="+scope;
 
 
-
-            return musicItem;
-
-
-        }
     }
 
+    public void getAuthenticationToken(String clientSecret, String authCode) {
+        Map<String, String> options = new HashMap<String, String>();
 
+        options.put("clientSecret", ""+clientSecret);
 
-    public class ArtistSerializer implements JsonSerializer<Artist> {
+        options.put("authCode", authCode);
 
-        public JsonElement serialize(Artist artist, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(artist.toString());
-        }
-    }
-
-
-
-    public class ArtistDeserializer implements JsonDeserializer<Artist> {
-        public Artist deserialize(JsonElement artistStr, Type typeOfSrc, JsonDeserializationContext context) {
-            Artist artist = new Artist();
-            JsonObject artist_obj = artistStr.getAsJsonObject();
-
-            artist.name = artist_obj.get("name").getAsString();
-            artist.id = artist_obj.get("id").getAsString();
-
-            if (artist_obj.has("thumbnails")) {
-                JsonObject thumbnails = artist_obj.get("thumbnails").getAsJsonObject();
-
-                artist.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-                artist.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-                artist.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-                artist.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-            }
-
-            if (artist_obj.has("origin")) {
-                JsonObject origin = artist_obj.get("origin").getAsJsonObject();
-
-                artist.location = origin.getAsJsonPrimitive("name").getAsString();
-            }
-
-            if (artist_obj.has("country")) {
-                JsonObject country = artist_obj.get("country").getAsJsonObject();
-
-                artist.location = country.getAsJsonPrimitive("name").getAsString();
-            }
-
-            if (artist_obj.has("genres") && artist_obj.get("genres").isJsonArray()) {
-                JsonArray genres = artist_obj.get("genres").getAsJsonArray();
-
-                artist.genres = new ArrayList<Genre>();
-                for (int i = 0; i < genres.size(); i++) {
-                    Genre genre = context.deserialize(genres.get(i), Genre.class);
-
-                    artist.genres.add(genre);
-                }
-
-            }
-
-
-            return artist;
-
-
-        }
-    }
-
-    public class ProductDeserializer implements JsonDeserializer<Product> {
-        public Product deserialize(JsonElement artistStr, Type typeOfSrc, JsonDeserializationContext context) {
-            Product product = new Product();
-            JsonObject product_obj = artistStr.getAsJsonObject();
-
-            product.name = product_obj.get("name").getAsString();
-            product.id = product_obj.get("id").getAsString();
-
-            if (product_obj.has("thumbnails")) {
-                JsonObject thumbnails = product_obj.get("thumbnails").getAsJsonObject();
-
-                product.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-                product.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-                product.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-                product.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-            }
-
-            if(product_obj.has("category")) {
-                JsonObject category = product_obj.get("category").getAsJsonObject();
-
-
-                product.category = Category.valueOf(category.getAsJsonPrimitive("id").getAsString().toUpperCase());
-
-            }
-
-            if(product_obj.has("takenfrom")) {
-                JsonObject takenfrom = product_obj.get("takenfrom").getAsJsonObject();
-
-                Product taken = new Product();
-                taken.id =  takenfrom.getAsJsonPrimitive("id").getAsString();
-                taken.name =  takenfrom.getAsJsonPrimitive("name").getAsString();
-
-                product.takenFrom = taken;
-
-            }
-
-            if(product_obj.has("trackcount")) {
-                product.trackCount = product_obj.get("trackcount").getAsInt();
-            }
-            if (product_obj.has("genres") && product_obj.get("genres").isJsonArray()) {
-                JsonArray genres = product_obj.get("genres").getAsJsonArray();
-
-                product.genres = new ArrayList<Genre>();
-                for (int i = 0; i < genres.size(); i++) {
-                    Genre genre = context.deserialize(genres.get(i), Genre.class);
-
-                    product.genres.add(genre);
-                }
-
-            }
-
-
-            return product;
-
-
-        }
+        secureApiService.getAuthenticationToken(options);
     }
 
 }

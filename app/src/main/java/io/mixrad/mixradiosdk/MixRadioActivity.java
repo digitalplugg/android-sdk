@@ -3,6 +3,7 @@ package io.mixrad.mixradiosdk;
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -34,9 +35,23 @@ public class MixRadioActivity extends Activity {
 
         String myApiKey = getString(R.string.MixRadioClientId,"");
 
-        MixRadioClient client = new MixRadioClient(myApiKey, "gb");
+        final MixRadioClient client = new MixRadioClient(myApiKey, "gb");
 
-        client.getSearchSuggestionsAsync("test", 10, new Callback<List<String>>() {
+        new Thread() {
+
+            @Override
+            public void run() {
+                super.run();
+
+                String test = client.getAuthenticationUri("play_mix write_usertasteprofile read_usertasteprofile read_userplayhistory", "");
+
+
+                Log.e("SUCCESS","have returned "+test);
+            }
+
+
+        }.start();
+        /*client.getSearchSuggestions("test", 10, new Callback<List<String>>() {
             @Override
             public void success(List<String> artists, Response response) {
                 Log.e("SUCCESS", "have got a list of artists");
@@ -49,7 +64,7 @@ public class MixRadioActivity extends Activity {
             public void failure(RetrofitError retrofitError) {
                 Log.e("FAILURE", "haven't got list of artists");
             }
-        });
+        });*/
 
     }
 

@@ -23,7 +23,7 @@ public class Artist {
         public List<Genre> genres;
         /** Gets the artist’s approximate origin geocoordinates (when available).*/
         @SerializedName("origin")
-        public String location;
+        public Location location;
         /** Gets a URI to a 50px x 50px thumbnail (when available). */
         @SerializedName("thumbnails")
         public String thumb50Uri;

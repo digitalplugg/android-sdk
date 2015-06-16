@@ -26,133 +26,138 @@ interface MixRadioService {
 
 
     @GET("/{countrycode}")
-    public void searchAsync(
+    public void search(
             @QueryMap Map<String, String> options,
             Callback<List<MusicItem>> callback
     );
 
     @GET("/{countrycode}")
-    public void searchArtistsAsync(
+    public void searchArtists(
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
-    @GET("/")
-    public void getTopArtistsAsync(
+    @GET("/{countrycode}")
+    public void getTopArtists(
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
     @GET("/{countrycode}/products/charts/{category}")
-    public void getTopProductsAsync(
+    public void getTopProducts(
             @Path("category") Category category,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
-    @GET("/")
-    public void getNewReleasesAsync(
+    @GET("/{countrycode}/products/new/{category}")
+    public void getNewReleases(
+            @Path("category") Category category,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
-    @GET("/")
-    public void getNewReleasesForGenreAsync(
+    @GET("/{countrycode}/genres/{genre}/new/{category}")
+    public void getNewReleasesForGenre(
+            @Path("genre") String genre,
+            @Path("category") Category category,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
-    @GET("/{countrycode}/genres")
-    public void getGenresAsync(
+    @GET("/{countrycode}/genres?domain=music")
+    public void getGenres(
             Callback<List<Genre>> callback
     );
 
-    @GET("/")
-    public void getTopArtistsForGenreAsync(
+    @GET("/{countrycode}")
+    public void getTopArtistsForGenre(
+
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
-    @GET("/")
-    public void getTopProductsForGenreAsync(
+    @GET("/{countrycode}/genres/{genre}/charts/{category}")
+    public void getTopProductsForGenre(
+            @Path("genre") String genre,
+            @Path("category") Category category,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
     @GET("/{countrycode}/creators/{id}/products")
-    public void getArtistProductsAsync(
+    public void getArtistProducts(
             @Path("id") String id,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
     @GET("/{countrycode}/creators/{id}/similar")
-    public void getSimilarArtistsAsync(
+    public void getSimilarArtists(
             @Path("id") String id,
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
     @GET("/{countrycode}/mixes/groups")
-    public void getMixGroupsAsync(
+    public void getMixGroups(
             @QueryMap Map<String, String> options,
             Callback<List<MixGroup>> callback
     );
 
     @GET("/{countrycode}/mixes/groups/{id}")
-    public void getMixesAsync(
+    public void getMixes(
             @Path("id") String id,
             @QueryMap Map<String, String> options,
             Callback<List<MixClass>> callback
     );
 
     @GET("/{countrycode}/suggestions/creators")
-    public void getArtistSearchSuggestionsAsync(
+    public void getArtistSearchSuggestions(
             @QueryMap Map<String, String> options,
             Callback<List<String>> callback
     );
 
     @GET("/{countrycode}/suggestions")
-    public void getSearchSuggestionsAsync(
+    public void getSearchSuggestions(
             @QueryMap Map<String, String> options,
             Callback<List<String>> callback
     );
 
-    @GET("/")
-    public void getArtistsAroundLocationAsync(
+    @GET("/{countrycode}")
+    public void getArtistsAroundLocation(
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
-    @GET("/")
-    public void getSimilarProductsAsync(
+    @GET("/{countrycode}/products/{id}/similar")
+    public void getSimilarProducts(
+            @Path("id") String id,
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );
 
-    @GET("/")
+    @GET("/{countrycode}/products/{id}/sample")
     public Uri getTrackSampleUri(
-            @Query("id") String id
+            @Path("id") String id
     );
 
-    @GET("/")
-    public Uri getAuthenticationUri(
+    //@GET("/authorize/")
+    //public String getAuthenticationUri(
+    //        @QueryMap Map<String, String> options
+    //);
+    @GET("/token/")
+    public void getAuthenticationToken(
             @QueryMap Map<String, String> options
     );
-    @GET("/")
-    public void getAuthenticationTokenAsync(
-            @QueryMap Map<String, String> options,
-            Callback<List<Product>> callback
-    );
-    @GET("/")
+    /*@GET("/")
     public void setAuthenticationToken(
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
-    );
+    );*/
     @GET("/")
-    public void refreshAuthenticationTokenAsync(
-            @QueryMap Map<String, String> options,
-            Callback<List<Product>> callback
+    public String refreshAuthenticationToken(
+            @QueryMap Map<String, String> options
     );
 
     /*@GET("/")
@@ -166,20 +171,20 @@ interface MixRadioService {
             @QueryMap Map<String, String> options,
             Callback<List<Product>> callback
     );*/
-    @GET("/")
-    public void getUserPlayHistoryAsync(
+    @GET("/users/{userid}/history/")
+    public void getUserPlayHistory(
             @QueryMap Map<String, String> options,
             Callback<List<UserEvent>> callback
     );
 
-    @GET("/")
-    public void getUserTopArtistsAsync(
+    @GET("/users/{userid}/history/creators/")
+    public void getUserTopArtists(
             @QueryMap Map<String, String> options,
             Callback<List<Artist>> callback
     );
 
-    @GET("/")
-    public void getUserRecentMixesAsync(
+    @GET("/users/{userid}/history/mixes/")
+    public void getUserRecentMixes(
             @QueryMap Map<String, String> options,
             Callback<List<MixClass>> callback
     );
