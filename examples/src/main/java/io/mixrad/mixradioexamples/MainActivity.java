@@ -9,15 +9,36 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.content.Intent;
+import android.view.View;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 
 
+
+
 public class MainActivity extends FragmentActivity {
+
+    public enum MixRadioMode {
+        MixRadioMode_RequestCountry,
+        MixRadioMode_Search,
+        MixRadioMode_SearchArtist,
+        MixRadioMode_TopArtists,
+        MixRadioMode_Genres,
+        MixRadioMode_TopAlbums,
+        MixRadioMode_NewAlbums,
+        MixRadioMode_GetMixGroups,
+        MixRadioMode_Recommendations,
+    }
+
     // When requested, this adapter returns a DemoObjectFragment,
     // representing an object in the collection.
     MixRadioSDKPagerAdapter mMixRadioSDKPagerAdapter;
     ViewPager mViewPager;
+
+    public final static String MixRadioClientId = "";
+    public final static String EXTRA_MESSAGE = "io.mixrad.mixradioexplorer.MESSAGE";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +106,54 @@ public class MainActivity extends FragmentActivity {
         // fragments, so use getSupportFragmentManager.
 
     }
+
+    public void requestQueryMode(MixRadioMode mode)
+    {
+        if( mode == MixRadioMode.MixRadioMode_Search ||
+            mode == MixRadioMode.MixRadioMode_SearchArtist )
+        {
+            Intent intent = new Intent(this, MixRadioSearchActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, mode);
+            startActivity(intent);
+        }
+        else
+        {
+            Intent intent = new Intent(this, MixRadioAPIActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, mode);
+            startActivity(intent);
+        }
+    }
+
+    public void buttonPressed(View view) {
+
+        MixRadioMode tempMode = MixRadioMode.MixRadioMode_Search;
+
+        switch(view.getId()) {
+            case R.id.button_reset_country:
+                tempMode = MixRadioMode.MixRadioMode_RequestCountry;
+                break;
+            case R.id.button_search_artists:
+                tempMode = MixRadioMode.MixRadioMode_SearchArtist;
+                break;
+            case R.id.button_search:
+                tempMode = MixRadioMode.MixRadioMode_Search;
+                break;
+            case R.id.button_top_artists:
+                tempMode = MixRadioMode.MixRadioMode_TopArtists;
+                break;
+            case R.id.button_genres:
+                tempMode = MixRadioMode.MixRadioMode_Genres;
+                break;
+            case R.id.button_top_albums:
+                tempMode = MixRadioMode.MixRadioMode_TopAlbums;
+                break;
+            case R.id.button_new_albums:
+                tempMode = MixRadioMode.MixRadioMode_NewAlbums;
+                break;
+        }
+
+        requestQueryMode(tempMode);
+    }
 }
 
 // Since this is an object collection, use a FragmentStatePagerAdapter,
@@ -111,4 +180,6 @@ class MixRadioSDKPagerAdapter extends FragmentPagerAdapter {
         return "OBJECT " + (position + 1);
     }
 }
+
+
 

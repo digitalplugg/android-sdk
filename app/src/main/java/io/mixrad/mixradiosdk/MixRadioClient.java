@@ -28,7 +28,9 @@ import io.mixrad.mixradiosdk.model.MusicItem;
 import io.mixrad.mixradiosdk.model.Product;
 import io.mixrad.mixradiosdk.model.UserEvent;
 import retrofit.Callback;
+import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 
@@ -70,6 +72,20 @@ public class MixRadioClient {
                 .setEndpoint(BASE_URL)
                 .setConverter(converter)
                 .setRequestInterceptor(intercept)
+                /*
+                .setErrorHandler(new ErrorHandler() {
+                    @Override
+                    public Throwable handleError(RetrofitError retrofitError) {
+                        switch (retrofitError.getResponse().getStatus())
+                        {
+                            case 400:
+                                throw new RuntimeException("Bad Request: "+retrofitError.getBody());
+                            default:
+                                throw new RuntimeException("Something else bad: "+retrofitError.getBody());
+                        }
+                    }
+                })
+                */
                 .build();
 
         RestAdapter secureRestAdapter = new RestAdapter.Builder()
@@ -90,7 +106,8 @@ public class MixRadioClient {
     public void search(String searchTerm, Category category, String genreId, String orderBy, String sortOrder, int startIndex, int itemsPerPage, Callback<List<MusicItem>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         options.put("q", searchTerm);
-        options.put("category", category.toString());
+        if(category != null)
+            options.put("category", category.toString());
         options.put("genreId", genreId);
         options.put("orderBy", orderBy);
         options.put("sortOrder", sortOrder);
@@ -259,7 +276,7 @@ public class MixRadioClient {
     public void getArtistSearchSuggestions(String searchTerm, int itemsPerPage,Callback<List<String>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
-        options.put("searchTerm", ""+searchTerm);
+        options.put("q", ""+searchTerm);
 
         options.put("itemsPerPage", ""+itemsPerPage);
 

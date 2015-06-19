@@ -1,6 +1,21 @@
 <resources>
-    <string name="app_name">MixRadio Examples</string>
+    <string name="app_name">MixRadio SDK Explorer</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="resetcountry_label">We\'re using this country code for API calls:</string>
+
+    <string name="search_label">Try out the search APIs</string>
+
+    <string name="browse_label">Try out the browse APIs</string>
+
+    <string name="mix_label">Try out the Mix APIs</string>
+
+    <string name="recommendations_label">Try out the Recommendation APIs</string>
+
+    <string name="app_label">dsdsd</string>
+    <string name="search_hint">Search MixRadio</string>
+
+    <string name="search_title">Searching</string>
+    <string name="search_blurb">Wait while searching...</string>
 </resources>

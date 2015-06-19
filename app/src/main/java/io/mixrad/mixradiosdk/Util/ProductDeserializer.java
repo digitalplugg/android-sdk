@@ -1,14 +1,19 @@
 package io.mixrad.mixradiosdk.Util;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
+import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Category;
 import io.mixrad.mixradiosdk.model.Genre;
 import io.mixrad.mixradiosdk.model.Product;
@@ -21,6 +26,7 @@ public class ProductDeserializer implements JsonDeserializer<Product> {
         Product product = new Product();
         JsonObject product_obj = artistStr.getAsJsonObject();
 
+        /*
         product.name = product_obj.get("name").getAsString();
         product.id = product_obj.get("id").getAsString();
 
@@ -32,6 +38,7 @@ public class ProductDeserializer implements JsonDeserializer<Product> {
             product.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
             product.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
         }
+        */
 
         if(product_obj.has("category")) {
             JsonObject category = product_obj.get("category").getAsJsonObject();
@@ -65,6 +72,27 @@ public class ProductDeserializer implements JsonDeserializer<Product> {
                 product.genres.add(genre);
             }
 
+        }
+
+        if(product_obj.has("creators") && product_obj.get("creators").isJsonObject())
+        {
+            JsonElement creators = product_obj.get("creators");
+            JsonObject creatorsObj = creators.getAsJsonObject();
+
+            JsonElement creatorsElem = (creatorsObj.has("performers")) ? creatorsObj.get("performers") : creatorsObj.get("composers");
+            JsonArray creatorsArray = creatorsElem.getAsJsonArray();
+
+            if(creatorsArray != null)
+            {
+                product.performers = new ArrayList<Artist>();
+
+                for(int i=0; i<creatorsArray.size(); i++)
+                {
+                    Artist a = context.deserialize(creatorsArray.get(i), Artist.class);
+
+                    product.performers.add(a);
+                }
+            }
         }
 
 

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import io.mixrad.mixradioexamples.MainActivity.MixRadioMode;
 
 // Instances of this class are fragments representing a single
 // object in our collection.
@@ -24,4 +25,7 @@ public class MixRadioAPIFragment extends Fragment {
 
         return rootView;
     }
+
+
+
 }

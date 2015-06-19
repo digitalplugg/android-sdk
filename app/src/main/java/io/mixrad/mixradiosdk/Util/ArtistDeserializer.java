@@ -21,6 +21,7 @@ public class ArtistDeserializer implements JsonDeserializer<Artist> {
         Artist artist = new Artist();
         JsonObject artist_obj = artistStr.getAsJsonObject();
 
+        /*
         artist.name = artist_obj.get("name").getAsString();
         artist.id = artist_obj.get("id").getAsString();
 
@@ -32,6 +33,7 @@ public class ArtistDeserializer implements JsonDeserializer<Artist> {
             artist.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
             artist.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
         }
+        */
 
         if (artist_obj.has("origin")) {
             JsonObject origin = artist_obj.get("origin").getAsJsonObject();

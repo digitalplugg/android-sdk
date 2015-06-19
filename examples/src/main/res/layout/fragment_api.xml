@@ -3,52 +3,89 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal">
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reset Country"
-        android:id="@+id/button_reset_country"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/resetcountry_label"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
     <Button
-        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Reset Country"
+        android:id="@+id/button_reset_country"
+        android:onClick="buttonPressed"
+         />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/search_label"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search Artists"
-        android:id="@+id/button_search_artists"/>
-
+        android:id="@+id/button_search_artists"
+        android:onClick="buttonPressed"/>
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search"
-        android:id="@+id/button_search"/>
+        android:id="@+id/button_search"
+        android:onClick="buttonPressed"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/browse_label"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Top Artists"
-        android:id="@+id/button_top_artists"/>
+        android:id="@+id/button_top_artists"
+        android:onClick="buttonPressed"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Genres"
-        android:id="@+id/button_genres"/>
+        android:id="@+id/button_genres"
+        android:onClick="buttonPressed"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Top Albums"
-        android:id="@+id/button_top_albums"/>
-
+        android:id="@+id/button_top_albums"
+        android:onClick="buttonPressed"/>
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Albums"
-        android:id="@+id/button_new_albums"/>
-
+        android:id="@+id/button_new_albums"
+        android:onClick="buttonPressed"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/mix_label"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get Mix Groups"
-        android:id="@+id/button_get_mix_groups"/>
+        android:id="@+id/button_get_mix_groups"
+        android:onClick="buttonPressed"/>
+
+
 
 </LinearLayout>

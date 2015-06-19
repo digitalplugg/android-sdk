@@ -33,7 +33,7 @@ public class MixRadioActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.example);
 
-        String myApiKey = getString(R.string.MixRadioClientId,"");
+        String myApiKey = "0ffa393383247d8ed7835e72de69f6a8";//getString(R.string.MixRadioClientId,"");
 
         final MixRadioClient client = new MixRadioClient(myApiKey, "gb");
 
@@ -44,7 +44,6 @@ public class MixRadioActivity extends Activity {
                 super.run();
 
                 String test = client.getAuthenticationUri("play_mix write_usertasteprofile read_usertasteprofile read_userplayhistory", "");
-
 
                 Log.e("SUCCESS","have returned "+test);
             }
