@@ -7,7 +7,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,139 +48,35 @@ import retrofit.client.Response;
 
 
 
-public class MixRadioAPIActivity extends Activity {
-
-    MixRadioClient          mixRadioClient;
-    ArrayList<Object>       mixRadioData;
-    MixRadioAdapter         adapter;
-    ProgressDialog          progress;
+public class MixRadioAPIActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId, "gb");
-        mixRadioData = new ArrayList<Object>();
-
-        setContentView(R.layout.activity_genericlist);
-
-        // Create the list view
-        final ListView listview = (ListView) findViewById(R.id.listview);
-
-        adapter = new MixRadioAdapter(this, new ArrayList<Object>());
-        listview.setAdapter(adapter);
-
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(getApplicationContext(),
-                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
-                        .show();
-            }
-        });
-
+        setContentView(R.layout.activity_api);
 
         Intent intent = getIntent();
         MainActivity.MixRadioMode message = (MainActivity.MixRadioMode) intent.getSerializableExtra(MainActivity.EXTRA_MESSAGE);
 
-        Log.d("Explorer", "changing to " + message);
+        FragmentManager fm = getSupportFragmentManager();
+        MixRadioGenericFragment genericFragment = new MixRadioGenericFragment();//(MixRadioGenericFragment) fm.findFragmentById(R.id.generic_fragment);
 
-        progress = new ProgressDialog(this);
-        progress.setMessage(getString(R.string.search_title));
+        Bundle args = new Bundle();
+        args.putSerializable(MainActivity.EXTRA_MESSAGE, message);
+        genericFragment.setArguments(args);
 
-        if(message == MainActivity.MixRadioMode.MixRadioMode_TopArtists)
-        {
-            progress.show();
 
-            mixRadioClient.getTopArtists(new Callback<List<Artist>>() {
-                @Override
-                public void success(List<Artist> artists, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(artists);
-                    updateListView();
-                }
+        fm.beginTransaction().add(genericFragment, "FRAG").commit();
+        fm.executePendingTransactions();
 
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Log.e("TEST", "ErrorM: " + retrofitError.getResponse().getStatus() + " " + retrofitError.getResponse().getBody());
-                    Toast.makeText(MixRadioAPIActivity.this, retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    progress.cancel();
-                }
-            });
-        }
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_Genres)
-        {
-            progress.show();
 
-            mixRadioClient.getGenres(new Callback<List<Genre>>() {
-                @Override
-                public void success(List<Genre> genres, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(genres);
-                    updateListView();
-                }
+        Fragment temp = fm.findFragmentByTag("FRAG");
 
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Toast.makeText(MixRadioAPIActivity.this,retrofitError.getResponse().getReason(),Toast.LENGTH_LONG).show();
-                    progress.cancel();
-                }
-            });
-        }
 
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums)
-        {
-            progress.show();
-
-            mixRadioClient.getTopProducts(Category.ALBUM, 0, 30, new Callback<List<Product>>() {
-                @Override
-                public void success(List<Product> products, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(products);
-                    updateListView();
-                }
-
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Toast.makeText(MixRadioAPIActivity.this, retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    progress.cancel();
-                }
-            });
-        }
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums)
-        {
-            progress.show();
-
-            mixRadioClient.getNewReleases(Category.ALBUM, 0, 30, new Callback<List<Product>>() {
-                @Override
-                public void success(List<Product> products, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(products);
-                    updateListView();
-                }
-
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Toast.makeText(MixRadioAPIActivity.this, retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    progress.cancel();
-                }
-            });
-        }
+        //if(temp != null)
+        //    genericFragment.populateView(message);
     }
-
-
-
-    private void updateListView()
-    {
-        adapter.clear();
-        adapter.addAll(mixRadioData);
-        adapter.notifyDataSetChanged();
-
-        progress.cancel();
-    }
-
 
     //*/
 }

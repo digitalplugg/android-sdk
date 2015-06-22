@@ -25,7 +25,4 @@ public class MixRadioAPIFragment extends Fragment {
 
         return rootView;
     }
-
-
-
 }

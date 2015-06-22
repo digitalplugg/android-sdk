@@ -29,7 +29,9 @@
         </activity>
         <activity android:name=".MixRadioAPIActivity"
             android:label="API Activity">
-
+        </activity>
+        <activity android:name=".MixRadioGenresActivity"
+            android:label="Genres Activity">
         </activity>
         <activity android:name=".MixRadioSearchActivity">
             <intent-filter>

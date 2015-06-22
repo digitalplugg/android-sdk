@@ -24,10 +24,13 @@ public class MainActivity extends FragmentActivity {
         MixRadioMode_RequestCountry,
         MixRadioMode_Search,
         MixRadioMode_SearchArtist,
-        MixRadioMode_TopArtists,
+
         MixRadioMode_Genres,
         MixRadioMode_TopAlbums,
+        MixRadioMode_TopArtists,
+        MixRadioMode_TopSongs,
         MixRadioMode_NewAlbums,
+        MixRadioMode_NewSongs,
         MixRadioMode_GetMixGroups,
         MixRadioMode_Recommendations,
     }
@@ -37,7 +40,7 @@ public class MainActivity extends FragmentActivity {
     MixRadioSDKPagerAdapter mMixRadioSDKPagerAdapter;
     ViewPager mViewPager;
 
-    public final static String MixRadioClientId = "";
+    public final static String MixRadioClientId = "0ffa393383247d8ed7835e72de69f6a8";
     public final static String EXTRA_MESSAGE = "io.mixrad.mixradioexplorer.MESSAGE";
 
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +116,12 @@ public class MainActivity extends FragmentActivity {
             mode == MixRadioMode.MixRadioMode_SearchArtist )
         {
             Intent intent = new Intent(this, MixRadioSearchActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, mode);
+            startActivity(intent);
+        }
+        else if(mode == MixRadioMode.MixRadioMode_Genres)
+        {
+            Intent intent = new Intent(this, MixRadioGenresActivity.class);
             intent.putExtra(EXTRA_MESSAGE, mode);
             startActivity(intent);
         }
