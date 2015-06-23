@@ -60,18 +60,18 @@ public class MixRadioAPIActivity extends FragmentActivity {
         MainActivity.MixRadioMode message = (MainActivity.MixRadioMode) intent.getSerializableExtra(MainActivity.EXTRA_MESSAGE);
 
         FragmentManager fm = getSupportFragmentManager();
-        MixRadioGenericFragment genericFragment = new MixRadioGenericFragment();//(MixRadioGenericFragment) fm.findFragmentById(R.id.generic_fragment);
+        MixRadioGenericFragment genericFragment = new MixRadioGenericFragment();
 
         Bundle args = new Bundle();
         args.putSerializable(MainActivity.EXTRA_MESSAGE, message);
         genericFragment.setArguments(args);
 
 
-        fm.beginTransaction().add(genericFragment, "FRAG").commit();
+        fm.beginTransaction().add(R.id.fragment_container, genericFragment).commit();
         fm.executePendingTransactions();
 
 
-        Fragment temp = fm.findFragmentByTag("FRAG");
+        setTitle("dsdsd");
 
 
         //if(temp != null)

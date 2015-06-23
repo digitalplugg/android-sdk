@@ -19,23 +19,23 @@ import io.mixrad.mixradiosdk.model.Product;
  * Created by RichardW on 27/05/15.
  */
 public class MusicItemDeserializer implements JsonDeserializer<MusicItem> {
-    public MusicItem deserialize(JsonElement artistStr, Type typeOfSrc, JsonDeserializationContext context) {
+    public MusicItem deserialize(JsonElement musicItemStr, Type typeOfSrc, JsonDeserializationContext context) {
 
 
-        JsonObject artist_obj = artistStr.getAsJsonObject();
+        JsonObject jsonObject = musicItemStr.getAsJsonObject();
 
-        String type = artist_obj.get("type").getAsString();
+        String type = jsonObject.get("type").getAsString();
 
         MusicItem musicItem;
 
         if(type.equals("musicartist"))
         {
-            Artist artist = new ArtistDeserializer().deserialize(artistStr, typeOfSrc, context);
+            Artist artist = context.deserialize(musicItemStr, Artist.class);
             musicItem = (MusicItem)artist;
         }
         else if(type.equals("musiccollection") || type.equals("musictrack"))
         {
-            Product product = new ProductDeserializer().deserialize(artistStr, typeOfSrc, context);
+            Product product = context.deserialize(musicItemStr, Product.class);
             musicItem = (MusicItem)product;
         }
         else
@@ -43,20 +43,27 @@ public class MusicItemDeserializer implements JsonDeserializer<MusicItem> {
             musicItem = new MusicItem();
         }
 
-        musicItem.name = artist_obj.get("name").getAsString();
-        musicItem.id = artist_obj.get("id").getAsString();
 
-        if (artist_obj.has("thumbnails")) {
-            JsonObject thumbnails = artist_obj.get("thumbnails").getAsJsonObject();
-
-            musicItem.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-            musicItem.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-            musicItem.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-            musicItem.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-        }
+        musicItem = MusicItemDeserializer.readStandardItems(musicItem, jsonObject);
 
         return musicItem;
 
+    }
 
+    public static MusicItem readStandardItems(MusicItem item, JsonObject jsonobj)
+    {
+        item.name = jsonobj.get("name").getAsString();
+        item.id = jsonobj.get("id").getAsString();
+
+        if (jsonobj.has("thumbnails")) {
+            JsonObject thumbnails = jsonobj.get("thumbnails").getAsJsonObject();
+
+            item.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
+            item.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
+            item.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
+            item.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
+        }
+
+        return item;
     }
 }

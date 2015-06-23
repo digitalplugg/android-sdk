@@ -26,19 +26,7 @@ public class ProductDeserializer implements JsonDeserializer<Product> {
         Product product = new Product();
         JsonObject product_obj = artistStr.getAsJsonObject();
 
-        /*
-        product.name = product_obj.get("name").getAsString();
-        product.id = product_obj.get("id").getAsString();
-
-        if (product_obj.has("thumbnails")) {
-            JsonObject thumbnails = product_obj.get("thumbnails").getAsJsonObject();
-
-            product.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-            product.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-            product.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-            product.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-        }
-        */
+        product = (Product) MusicItemDeserializer.readStandardItems(product, product_obj);
 
         if(product_obj.has("category")) {
             JsonObject category = product_obj.get("category").getAsJsonObject();

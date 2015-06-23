@@ -58,12 +58,6 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return super.getView(position, convertView, parent);
-    }
-
-/*
-    @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -113,5 +107,5 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
         }
         return rowView;
     }
-    */
+
 }

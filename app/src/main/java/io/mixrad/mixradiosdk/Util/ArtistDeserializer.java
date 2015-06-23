@@ -21,19 +21,7 @@ public class ArtistDeserializer implements JsonDeserializer<Artist> {
         Artist artist = new Artist();
         JsonObject artist_obj = artistStr.getAsJsonObject();
 
-        /*
-        artist.name = artist_obj.get("name").getAsString();
-        artist.id = artist_obj.get("id").getAsString();
-
-        if (artist_obj.has("thumbnails")) {
-            JsonObject thumbnails = artist_obj.get("thumbnails").getAsJsonObject();
-
-            artist.thumb50Uri = thumbnails.getAsJsonPrimitive("50x50").getAsString();
-            artist.thumb100Uri = thumbnails.getAsJsonPrimitive("100x100").getAsString();
-            artist.thumb200Uri = thumbnails.getAsJsonPrimitive("200x200").getAsString();
-            artist.thumb320Uri = thumbnails.getAsJsonPrimitive("320x320").getAsString();
-        }
-        */
+        artist = (Artist) MusicItemDeserializer.readStandardItems(artist, artist_obj);
 
         if (artist_obj.has("origin")) {
             JsonObject origin = artist_obj.get("origin").getAsJsonObject();

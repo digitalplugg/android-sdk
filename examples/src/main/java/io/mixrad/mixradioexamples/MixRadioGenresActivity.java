@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 /**
@@ -16,7 +18,7 @@ import java.util.ArrayList;
  */
 public class MixRadioGenresActivity extends FragmentActivity {
 
-    //MixRadioGenrePagerAdapter mMixRadioSDKPagerAdapter;
+    MixRadioGenrePagerAdapter mMixRadioSDKPagerAdapter;
     ViewPager mViewPager;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -32,16 +34,19 @@ public class MixRadioGenresActivity extends FragmentActivity {
         MixRadioGenericFragment newAlbums = new MixRadioGenericFragment();
         MixRadioGenericFragment newSongs = new MixRadioGenericFragment();
 
-        /*
+        Bundle args = new Bundle();
+        args.putSerializable(MainActivity.EXTRA_MESSAGE, new Gson().toJson(MainActivity.MixRadioMode.MixRadioMode_TopArtists));
+        topArtist.setArguments(args);
+
         fragment_list.add(topArtist);
         fragment_list.add(topAlbums);
         fragment_list.add(topSongs);
         fragment_list.add(newAlbums);
         fragment_list.add(newSongs);
-*/
+
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        /*
+
         mMixRadioSDKPagerAdapter =
                 new MixRadioGenrePagerAdapter(
                         getSupportFragmentManager());//,fragment_list);
@@ -58,21 +63,21 @@ public class MixRadioGenresActivity extends FragmentActivity {
                         //((MixRadioGenericFragment)fragment_list.get(position)).populateView(MainActivity.MixRadioMode.MixRadioMode_TopArtists);
                     }
                 });
-        */
-        /*
+
+
         topArtist.populateView(MainActivity.MixRadioMode.MixRadioMode_TopArtists);
         topAlbums.populateView(MainActivity.MixRadioMode.MixRadioMode_TopAlbums);
         topSongs.populateView(MainActivity.MixRadioMode.MixRadioMode_TopSongs);
         newAlbums.populateView(MainActivity.MixRadioMode.MixRadioMode_NewAlbums);
         newSongs.populateView(MainActivity.MixRadioMode.MixRadioMode_NewSongs);
-        */
+
 
         // Create a tab listener that is called when the user changes tabs.
         ActionBar.TabListener tabListener = new ActionBar.TabListener() {
 
             @Override
             public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-                mViewPager.setCurrentItem(tab.getPosition());
+//                mViewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -118,7 +123,7 @@ public class MixRadioGenresActivity extends FragmentActivity {
         );
     }
 
-    /*
+
     class MixRadioGenrePagerAdapter extends FragmentPagerAdapter {
         ArrayList<Fragment> fragments;
         public MixRadioGenrePagerAdapter(FragmentManager fm) {
@@ -144,5 +149,5 @@ public class MixRadioGenresActivity extends FragmentActivity {
             return "OBJECT " + (position + 1);
         }
     }
-    */
+
 }

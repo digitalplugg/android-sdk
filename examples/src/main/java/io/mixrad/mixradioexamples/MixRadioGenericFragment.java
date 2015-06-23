@@ -48,8 +48,6 @@ public class MixRadioGenericFragment extends Fragment {
 
         mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId, "gb");
         mixRadioData = new ArrayList<Object>();
-        mixRadioData.add("Hello");
-        mixRadioData.add("World");
 
         View rootView = inflater.inflate(
                 R.layout.fragment_generic, container, false);
@@ -78,7 +76,7 @@ public class MixRadioGenericFragment extends Fragment {
 
             if(mActivity != null)
             {
-                //populateView(message);
+                populateView(message);
             }
 
         }
@@ -188,12 +186,12 @@ public class MixRadioGenericFragment extends Fragment {
 
     private void updateListView()
     {
-        adapter.clear();
+        //adapter.clear();
 
-        adapter.addAll(mixRadioData);
+        //adapter.addAll(mixRadioData);
         adapter.notifyDataSetChanged();
 
-        //listview.setAdapter(adapter);
+        listview.setAdapter(adapter);
         //progress.cancel();
     }
 }
