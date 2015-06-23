@@ -56,7 +56,7 @@ public class MixRadioSearchActivity extends Activity {
         searchMode = (MixRadioMode) intent.getSerializableExtra(MainActivity.EXTRA_MESSAGE);
 
         mixRadioData = new ArrayList<Object>();
-        adapter = new MixRadioAdapter(this, new ArrayList<Object>());
+        adapter = new MixRadioAdapter(this, R.layout.list_item, new ArrayList<Object>());
 
         mSearchView = (SearchView) findViewById(R.id.search);
         mSearchView.setVisibility(View.VISIBLE);

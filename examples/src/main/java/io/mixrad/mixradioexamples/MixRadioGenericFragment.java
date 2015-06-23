@@ -35,6 +35,7 @@ public class MixRadioGenericFragment extends Fragment {
     MixRadioAdapter         adapter;
     ProgressDialog          progress;
     Activity                mActivity;
+    ListView                listview;
 
     MainActivity.MixRadioMode   message;
 
@@ -47,14 +48,17 @@ public class MixRadioGenericFragment extends Fragment {
 
         mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId, "gb");
         mixRadioData = new ArrayList<Object>();
+        mixRadioData.add("Hello");
+        mixRadioData.add("World");
 
         View rootView = inflater.inflate(
                 R.layout.fragment_generic, container, false);
 
-        final ListView listview = (ListView) rootView.findViewById(R.id.listview);
+        listview = (ListView) rootView.findViewById(R.id.listview);
 
-        adapter = new MixRadioAdapter(getActivity().getApplicationContext(), new ArrayList<Object>());
+        adapter = new MixRadioAdapter(getActivity().getApplicationContext(), R.layout.list_item, mixRadioData);
         listview.setAdapter(adapter);
+
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -74,12 +78,12 @@ public class MixRadioGenericFragment extends Fragment {
 
             if(mActivity != null)
             {
-                populateView(message);
+                //populateView(message);
             }
 
         }
 
-        return listview;
+        return rootView;
     }
 
     @Override
@@ -90,7 +94,7 @@ public class MixRadioGenericFragment extends Fragment {
         mActivity = activity;
 
         if(message != null) {
-            populateView(message);
+            //populateView(message);
         }
     }
 
@@ -185,9 +189,11 @@ public class MixRadioGenericFragment extends Fragment {
     private void updateListView()
     {
         adapter.clear();
+
         adapter.addAll(mixRadioData);
         adapter.notifyDataSetChanged();
 
+        //listview.setAdapter(adapter);
         //progress.cancel();
     }
 }

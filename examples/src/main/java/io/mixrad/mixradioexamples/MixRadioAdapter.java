@@ -1,6 +1,7 @@
 package io.mixrad.mixradioexamples;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.mixrad.mixradiosdk.model.Artist;
@@ -26,13 +28,41 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
     private final Context context;
     private ArrayList<Object> data = null;
 
-    public MixRadioAdapter(Context context, ArrayList<Object> data)
+    public MixRadioAdapter(Context context, int textViewResourceId, ArrayList<Object> data)
     {
-        super(context, -1, data);
+        super(context, textViewResourceId, data);
         this.context = context;
         this.data = data;
     }
 
+    @Override
+    public void addAll(Collection<?> collection) {
+        Log.d("FRAG", "adding collection " + collection.size());
+        super.addAll(collection);
+    }
+
+    @Override
+    public int getCount() {
+        Log.d("FRAG", "get size " + super.getCount() + " " + data.size());
+        return super.getCount();
+    }
+
+    @Override
+    public long getItemId (int position) {
+        return position;
+    }
+
+    @Override
+    public Object getItem (int position) {
+        return this.data.get(position);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return super.getView(position, convertView, parent);
+    }
+
+/*
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
@@ -83,4 +113,5 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
         }
         return rowView;
     }
+    */
 }
