@@ -95,6 +95,9 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
             if(p.thumb100Uri != null)
             {   Picasso.with(context).load(p.thumb100Uri).into(imageView);
             }
+            else
+            {   imageView.setImageResource(android.R.color.transparent);
+            }
         }
         else if(o.getClass().equals(Genre.class))
         {   Genre g = (Genre)o;

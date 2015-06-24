@@ -70,9 +70,18 @@ public class MixRadioAPIActivity extends FragmentActivity {
         fm.beginTransaction().add(R.id.fragment_container, genericFragment).commit();
         fm.executePendingTransactions();
 
-
-        setTitle("dsdsd");
-
+        if(message == MainActivity.MixRadioMode.MixRadioMode_Genres)
+            setTitle(getString(R.string.genres));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums)
+            setTitle(getString(R.string.top_albums));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopArtists)
+            setTitle(getString(R.string.top_artists));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopSongs)
+            setTitle(getString(R.string.top_songs));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums)
+            setTitle(getString(R.string.new_albums));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_NewSongs)
+            setTitle(getString(R.string.new_songs));
 
         //if(temp != null)
         //    genericFragment.populateView(message);

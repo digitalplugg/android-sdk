@@ -33,6 +33,7 @@ public class MainActivity extends FragmentActivity {
         MixRadioMode_NewSongs,
         MixRadioMode_GetMixGroups,
         MixRadioMode_Recommendations,
+        MixRadioMode_SimilarArtists,
     }
 
     // When requested, this adapter returns a DemoObjectFragment,
@@ -42,6 +43,7 @@ public class MainActivity extends FragmentActivity {
 
     public final static String MixRadioClientId = "0ffa393383247d8ed7835e72de69f6a8";
     public final static String EXTRA_MESSAGE = "io.mixrad.mixradioexplorer.MESSAGE";
+    public final static int ITEMS_PER_PAGE = 30;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,13 +121,15 @@ public class MainActivity extends FragmentActivity {
             intent.putExtra(EXTRA_MESSAGE, mode);
             startActivity(intent);
         }
-        else if(mode == MixRadioMode.MixRadioMode_Genres)
+        else
+        /*if(mode == MixRadioMode.MixRadioMode_Genres)
         {
             Intent intent = new Intent(this, MixRadioGenresActivity.class);
             intent.putExtra(EXTRA_MESSAGE, mode);
             startActivity(intent);
         }
         else
+        */
         {
             Intent intent = new Intent(this, MixRadioAPIActivity.class);
             intent.putExtra(EXTRA_MESSAGE, mode);

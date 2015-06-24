@@ -3,87 +3,64 @@ package io.mixrad.mixradioexamples;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
+import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Genre;
 
 /**
- * Created by mattaranha on 22/06/15.
+ * Created by mattaranha on 24/06/15.
  */
-public class MixRadioGenresActivity extends FragmentActivity {
-
+public class MixRadioArtistActivity  extends FragmentActivity {
     MixRadioSDKPagerAdapter     mMixRadioSDKPagerAdapter;
     ViewPager                   mViewPager;
-
-    Genre                       mGenre;
+    Artist                      mArtist;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String genreString = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        mGenre = new Gson().fromJson(genreString, Genre.class);
+        String artistString = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        mArtist = new Gson().fromJson(artistString, Artist.class);
 
-        setTitle(mGenre.name);
+        setTitle(mArtist.name);
 
         final ActionBar actionBar = getActionBar();
         final ArrayList<Fragment> fragment_list = new ArrayList<Fragment>();
 
-        MixRadioGenericFragment topAlbums = new MixRadioGenericFragment();
-        MixRadioGenericFragment topArtist = new MixRadioGenericFragment();
+        MixRadioArtistFragment artistOverview = new MixRadioArtistFragment();
         MixRadioGenericFragment topSongs = new MixRadioGenericFragment();
-        MixRadioGenericFragment newAlbums = new MixRadioGenericFragment();
-        MixRadioGenericFragment newSongs = new MixRadioGenericFragment();
+        MixRadioGenericFragment similarArtists = new MixRadioGenericFragment();
 
         Bundle args = new Bundle();
-        MainActivity.MixRadioMode mode = MainActivity.MixRadioMode.MixRadioMode_TopAlbums;
-        args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        topAlbums.setArguments(args);
+        args.putSerializable(MainActivity.EXTRA_MESSAGE, new Gson().toJson(mArtist));
+        artistOverview.setArguments(args);
 
         args = new Bundle();
-        mode = MainActivity.MixRadioMode.MixRadioMode_TopAlbums;
-        args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        topArtist.setArguments(args);
-
-        args = new Bundle();
-        mode = MainActivity.MixRadioMode.MixRadioMode_TopSongs;
+        MainActivity.MixRadioMode mode = MainActivity.MixRadioMode.MixRadioMode_TopSongs;
         args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
         topSongs.setArguments(args);
 
         args = new Bundle();
-        mode = MainActivity.MixRadioMode.MixRadioMode_NewAlbums;
+        mode = MainActivity.MixRadioMode.MixRadioMode_SimilarArtists;
         args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        newAlbums.setArguments(args);
+        similarArtists.setArguments(args);
 
-        args = new Bundle();
-        mode = MainActivity.MixRadioMode.MixRadioMode_NewSongs;
-        args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        newSongs.setArguments(args);
-
-        fragment_list.add(topAlbums);
-        fragment_list.add(topArtist);
+        fragment_list.add(artistOverview);
         fragment_list.add(topSongs);
-        fragment_list.add(newAlbums);
-        fragment_list.add(newSongs);
+        fragment_list.add(similarArtists);
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        /*
-        mMixRadioSDKPagerAdapter =
-                new MixRadioGenrePagerAdapter(
-                        getSupportFragmentManager());//,fragment_list);
-                        */
+
         mMixRadioSDKPagerAdapter = new MixRadioSDKPagerAdapter(getSupportFragmentManager(), fragment_list);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mMixRadioSDKPagerAdapter);
@@ -104,7 +81,7 @@ public class MixRadioGenresActivity extends FragmentActivity {
 
             @Override
             public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-                    mViewPager.setCurrentItem(tab.getPosition());
+                mViewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -123,13 +100,7 @@ public class MixRadioGenresActivity extends FragmentActivity {
 
         actionBar.addTab(
                 actionBar.newTab()
-                        .setText(getString(R.string.top_albums))
-                        .setTabListener(tabListener)
-        );
-
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText(getString(R.string.top_artists))
+                        .setText(getString(R.string.artist_overview))
                         .setTabListener(tabListener)
         );
 
@@ -141,13 +112,7 @@ public class MixRadioGenresActivity extends FragmentActivity {
 
         actionBar.addTab(
                 actionBar.newTab()
-                        .setText(getString(R.string.new_albums))
-                        .setTabListener(tabListener)
-        );
-
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText(getString(R.string.new_songs))
+                        .setText(getString(R.string.artist_similar))
                         .setTabListener(tabListener)
         );
     }

@@ -19,7 +19,7 @@
         <Button
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:text="Reset Country"
+            android:text="@string/reset_country"
             android:id="@+id/button_reset_country"
             android:onClick="buttonPressed"
              />
@@ -34,13 +34,13 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search Artists"
+            android:text="@string/search_artist"
             android:id="@+id/button_search_artists"
             android:onClick="buttonPressed"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search"
             android:id="@+id/button_search"
             android:onClick="buttonPressed"/>
 
@@ -54,27 +54,27 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Top Artists"
+            android:text="@string/top_artists"
             android:id="@+id/button_top_artists"
             android:onClick="buttonPressed"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Genres"
+            android:text="@string/genres"
             android:id="@+id/button_genres"
             android:onClick="buttonPressed"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Top Albums"
+            android:text="@string/top_albums"
             android:id="@+id/button_top_albums"
             android:onClick="buttonPressed"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Albums"
+            android:text="@string/top_albums"
             android:id="@+id/button_new_albums"
             android:onClick="buttonPressed"/>
         <TextView
@@ -87,7 +87,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Get Mix Groups"
+            android:text="@string/get_mix_groups"
             android:id="@+id/button_get_mix_groups"
             android:onClick="buttonPressed"/>
 

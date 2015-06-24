@@ -2,9 +2,11 @@ package io.mixrad.mixradioexamples;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,7 @@ public class MixRadioGenericFragment extends Fragment {
     ListView                listview;
 
     MainActivity.MixRadioMode   message;
+    Genre                   mGenre;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -57,17 +62,17 @@ public class MixRadioGenericFragment extends Fragment {
         adapter = new MixRadioAdapter(getActivity().getApplicationContext(), R.layout.list_item, mixRadioData);
         listview.setAdapter(adapter);
 
+        FragmentActivity fa = getActivity();
+        if(fa instanceof MixRadioGenresActivity)
+        {
+            MixRadioGenresActivity gFA = (MixRadioGenresActivity)fa;
+            mGenre = gFA.mGenre;
+        }
+        else
+        {
+            mGenre = null;
+        }
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
-                        .show();
-            }
-        });
 
         if(getArguments() != null)
         {
@@ -80,6 +85,42 @@ public class MixRadioGenericFragment extends Fragment {
             }
 
         }
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+
+                if(message == MainActivity.MixRadioMode.MixRadioMode_Genres)
+                {
+                    Genre genre = (Genre) mixRadioData.get(position);
+
+                    Intent intent = new Intent(getActivity(), MixRadioGenresActivity.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, new Gson().toJson(genre));
+                    startActivity(intent);
+                }
+                else if(message == MainActivity.MixRadioMode.MixRadioMode_TopArtists)
+                {
+
+                }
+                else if(message == MainActivity.MixRadioMode.MixRadioMode_NewSongs ||
+                        message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums ||
+                        message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums ||
+                        message == MainActivity.MixRadioMode.MixRadioMode_TopSongs)
+                {
+
+                }
+                /*
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
+                        .show();
+                        */
+            }
+        });
+
+
 
         return rootView;
     }
@@ -101,97 +142,165 @@ public class MixRadioGenericFragment extends Fragment {
     {
         Log.d("FRAG", "GENERIC POPULATE");
 
-        //progress = new ProgressDialog(mActivity.getApplicationContext());
-        //progress.setMessage(getString(R.string.search_title));
+        progress = new ProgressDialog(getActivity());//(mActivity.getApplicationContext());
+        progress.setMessage(getString(R.string.search_title));
 
-        if(message == MainActivity.MixRadioMode.MixRadioMode_TopArtists)
+        if(message == MainActivity.MixRadioMode.MixRadioMode_Genres)
         {
-            //progress.show();
-
-            mixRadioClient.getTopArtists(new Callback<List<Artist>>() {
-                @Override
-                public void success(List<Artist> artists, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(artists);
-                    updateListView();
-                }
-
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Log.e("TEST", "ErrorM: " + retrofitError.getResponse().getStatus() + " " + retrofitError.getResponse().getBody());
-                    Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    //progress.cancel();
-                }
-            });
-        }
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_Genres)
-        {
-            //progress.show();
+            if(progress != null) progress.show();
 
             mixRadioClient.getGenres(new Callback<List<Genre>>() {
                 @Override
                 public void success(List<Genre> genres, Response response) {
                     mixRadioData.clear();
                     mixRadioData.addAll(genres);
-                    updateListView();
+                    adapter.notifyDataSetChanged();
+                    if(progress != null) progress.cancel();
                 }
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
                     Toast.makeText(getActivity().getApplicationContext(),retrofitError.getResponse().getReason(),Toast.LENGTH_LONG).show();
-                    //progress.cancel();
+                    progress.cancel();
                 }
             });
         }
-
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums)
+        if(message == MainActivity.MixRadioMode.MixRadioMode_TopArtists)
         {
-            //progress.show();
+            if(progress != null) progress.show();
 
-            mixRadioClient.getTopProducts(Category.ALBUM, 0, 30, new Callback<List<Product>>() {
-                @Override
-                public void success(List<Product> products, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(products);
-                    updateListView();
-                }
+            if(mGenre != null)
+            {
+                mixRadioClient.getTopArtistsForGenre(null , mGenre, 0, MainActivity.ITEMS_PER_PAGE, new Callback<List<Artist>>() {
+                    @Override
+                    public void success(List<Artist> artists, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(artists);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
 
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    //progress.cancel();
-                }
-            });
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Log.e("TEST", "ErrorM: " + retrofitError.getResponse().getStatus() + " " + retrofitError.getResponse().getBody());
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+            else
+            {   mixRadioClient.getTopArtists(new Callback<List<Artist>>() {
+                    @Override
+                    public void success(List<Artist> artists, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(artists);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Log.e("TEST", "ErrorM: " + retrofitError.getResponse().getStatus() + " " + retrofitError.getResponse().getBody());
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+
+
         }
-        else if(message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums)
+
+
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums || message == MainActivity.MixRadioMode.MixRadioMode_TopSongs)
         {
-            //progress.show();
+            if(progress != null) progress.show();
 
-            mixRadioClient.getNewReleases(Category.ALBUM, 0, 30, new Callback<List<Product>>() {
-                @Override
-                public void success(List<Product> products, Response response) {
-                    mixRadioData.clear();
-                    mixRadioData.addAll(products);
-                    updateListView();
-                }
+            Category category = (message == MainActivity.MixRadioMode.MixRadioMode_TopAlbums) ? Category.ALBUM : Category.TRACK;
 
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    //progress.cancel();
-                }
-            });
+            if(mGenre != null)
+            {
+                mixRadioClient.getTopProductsForGenre(null, mGenre, category, 0, MainActivity.ITEMS_PER_PAGE, new Callback<List<Product>>() {
+                    @Override
+                    public void success(List<Product> products, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(products);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+            else
+            {
+                mixRadioClient.getTopProducts(category, 0, MainActivity.ITEMS_PER_PAGE, new Callback<List<Product>>() {
+                    @Override
+                    public void success(List<Product> products, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(products);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+
+
+        }
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums || message == MainActivity.MixRadioMode.MixRadioMode_NewSongs)
+        {
+            if(progress != null) progress.show();
+
+            Category category = (message == MainActivity.MixRadioMode.MixRadioMode_NewAlbums) ? Category.ALBUM : Category.TRACK;
+
+            if(mGenre != null)
+            {
+                mixRadioClient.getNewReleasesForGenre(null, mGenre, category, 0, MainActivity.ITEMS_PER_PAGE, new Callback<List<Product>>() {
+                    @Override
+                    public void success(List<Product> products, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(products);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+            else
+            {
+                mixRadioClient.getNewReleases(category, 0, MainActivity.ITEMS_PER_PAGE, new Callback<List<Product>>() {
+                    @Override
+                    public void success(List<Product> products, Response response) {
+                        mixRadioData.clear();
+                        mixRadioData.addAll(products);
+                        adapter.notifyDataSetChanged();
+                        if(progress != null) progress.cancel();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Toast.makeText(getActivity().getApplicationContext(), retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
+                        if(progress != null) progress.cancel();
+                    }
+                });
+            }
+
+
         }
     }
 
-    private void updateListView()
-    {
-        //adapter.clear();
-
-        //adapter.addAll(mixRadioData);
-        adapter.notifyDataSetChanged();
-
-        listview.setAdapter(adapter);
-        //progress.cancel();
-    }
 }
