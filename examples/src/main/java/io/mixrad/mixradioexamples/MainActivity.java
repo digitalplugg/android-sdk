@@ -1,6 +1,7 @@
 package io.mixrad.mixradioexamples;
 
 import android.app.ActionBar;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,7 +16,7 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-
+import io.mixrad.mixradiosdk.MixRadioClient;
 
 
 public class MainActivity extends FragmentActivity {
@@ -31,19 +32,52 @@ public class MainActivity extends FragmentActivity {
         MixRadioMode_TopSongs,
         MixRadioMode_NewAlbums,
         MixRadioMode_NewSongs,
-        MixRadioMode_GetMixGroups,
-        MixRadioMode_Recommendations,
         MixRadioMode_SimilarArtists,
+        MixRadioMode_SimilarProducts,
+        MixRadioMode_GetMixGroups,
+        MixRadioMode_GetMixes,
+        MixRadioMode_Recommendations,
+
     }
 
     // When requested, this adapter returns a DemoObjectFragment,
     // representing an object in the collection.
-    MixRadioSDKPagerAdapter mMixRadioSDKPagerAdapter;
-    ViewPager mViewPager;
+    private static MixRadioClient               mixRadioClient;
+    private static MediaPlayer                  mMediaPlayer;
+    MixRadioSDKPagerAdapter                     mMixRadioSDKPagerAdapter;
+    ViewPager                                   mViewPager;
+    MixRadioAPIFragment                         fragmentAPI;
+
 
     public final static String MixRadioClientId = "0ffa393383247d8ed7835e72de69f6a8";
     public final static String EXTRA_MESSAGE = "io.mixrad.mixradioexplorer.MESSAGE";
     public final static int ITEMS_PER_PAGE = 30;
+
+    public static MediaPlayer getMediaPlayer()
+    {
+        if(mMediaPlayer == null)
+        {
+            mMediaPlayer = new MediaPlayer();
+        }
+
+        return mMediaPlayer;
+    }
+
+    public static MixRadioClient getMixRadioClient()
+    {
+        if(mixRadioClient == null)
+        {
+            mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId);
+        }
+
+        return mixRadioClient;
+    }
+
+    public static MixRadioClient getNewMixRadioClient()
+    {
+        mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId);
+        return mixRadioClient;
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +86,9 @@ public class MainActivity extends FragmentActivity {
 
         final ActionBar actionBar = getActionBar();
         ArrayList<Fragment> fragment_list = new ArrayList<Fragment>();
-        fragment_list.add(new MixRadioAPIFragment());
+
+        fragmentAPI = new MixRadioAPIFragment();
+        fragment_list.add(fragmentAPI);
         fragment_list.add(new MixRadioUserDataFragment());
 
         // Specify that tabs should be displayed in the action bar.
@@ -163,9 +199,33 @@ public class MainActivity extends FragmentActivity {
             case R.id.button_new_albums:
                 tempMode = MixRadioMode.MixRadioMode_NewAlbums;
                 break;
+            case R.id.button_get_mix_groups:
+                tempMode = MixRadioMode.MixRadioMode_GetMixGroups;
+                break;
         }
 
-        requestQueryMode(tempMode);
+        if(view.getId() == R.id.button_reset_country)
+        {
+            mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .detach(fragmentAPI)
+                    .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .attach(fragmentAPI)
+                    .commit();
+
+
+
+        }
+        else
+        {
+            requestQueryMode(tempMode);
+        }
+
+
     }
 }
 

@@ -137,10 +137,10 @@ interface MixRadioService {
             Callback<List<Product>> callback
     );
 
-    @GET("/{countrycode}/products/{id}/sample")
-    public Uri getTrackSampleUri(
-            @Path("id") String id
-    );
+//    @GET("/{countrycode}/products/{id}/sample")
+//    public String getTrackSampleUri(
+//            @Path("id") String id
+//    );
 
     //@GET("/authorize/")
     //public String getAuthenticationUri(

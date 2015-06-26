@@ -17,6 +17,8 @@ import java.util.List;
 
 import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Genre;
+import io.mixrad.mixradiosdk.model.MixClass;
+import io.mixrad.mixradiosdk.model.MixGroup;
 import io.mixrad.mixradiosdk.model.MusicItem;
 import io.mixrad.mixradiosdk.model.Product;
 
@@ -37,13 +39,11 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
 
     @Override
     public void addAll(Collection<?> collection) {
-        Log.d("FRAG", "adding collection " + collection.size());
         super.addAll(collection);
     }
 
     @Override
     public int getCount() {
-        Log.d("FRAG", "get size " + super.getCount() + " " + data.size());
         return super.getCount();
     }
 
@@ -68,11 +68,11 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
 
         // check types of the objects
         Object o = data.get(position);
-        if(o.getClass().equals(String.class))
+        if(o instanceof String)
         {   text1.setText(o.toString());
             text2.setText("");
         }
-        else if(o.getClass().equals(Artist.class))
+        else if(o instanceof Artist)
         {   Artist a = (Artist)o;
             text1.setText(a.name);
             text2.setText("");
@@ -80,7 +80,7 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
             {   Picasso.with(context).load(a.thumb100Uri).into(imageView);
             }
         }
-        else if(o.getClass().equals(Product.class))
+        else if(o instanceof Product)
         {   Product p = (Product)o;
             List<Artist> as = p.performers;
             text1.setText(p.name);
@@ -99,9 +99,19 @@ public class MixRadioAdapter extends ArrayAdapter<Object>
             {   imageView.setImageResource(android.R.color.transparent);
             }
         }
-        else if(o.getClass().equals(Genre.class))
+        else if(o instanceof Genre)
         {   Genre g = (Genre)o;
             text1.setText(g.name);
+            text2.setText("");
+        }
+        else if(o instanceof MixGroup)
+        {   MixGroup mg = (MixGroup)o;
+            text1.setText(mg.name);
+            text2.setText("");
+        }
+        else if(o instanceof MixClass)
+        {   MixClass mg = (MixClass)o;
+            text1.setText(mg.name);
             text2.setText("");
         }
         else if(o instanceof MusicItem)

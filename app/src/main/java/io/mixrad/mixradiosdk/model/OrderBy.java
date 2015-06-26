@@ -6,9 +6,26 @@ package io.mixrad.mixradiosdk.model;
 public enum OrderBy {
 
         /** Items are ordered by relevance (default). */
-        RELEVANCE,
+        RELEVANCE ("relevance"),
         /** Items are ordered by name. */
-        NAME,
+        NAME ("name"),
         /** Items are ordered by release date. */
-        RELEASE_DATE,
+        RELEASE_DATE ("releasedate");
+
+
+    private final String name;
+
+    OrderBy(String s) {
+        name = s;
+    }
+
+    public boolean equalsName(String otherName){
+        return (otherName != null) && name.equals(otherName);
+    }
+
+    public String toString(){
+        return name;
+    }
 }
+
+

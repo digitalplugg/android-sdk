@@ -82,6 +82,8 @@ public class MixRadioAPIActivity extends FragmentActivity {
             setTitle(getString(R.string.new_albums));
         else if(message == MainActivity.MixRadioMode.MixRadioMode_NewSongs)
             setTitle(getString(R.string.new_songs));
+        else if(message == MainActivity.MixRadioMode.MixRadioMode_GetMixGroups)
+            setTitle(getString(R.string.mix_groups));
 
         //if(temp != null)
         //    genericFragment.populateView(message);

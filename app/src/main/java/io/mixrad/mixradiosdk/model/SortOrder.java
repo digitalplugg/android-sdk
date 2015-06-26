@@ -6,8 +6,22 @@ package io.mixrad.mixradiosdk.model;
 public enum SortOrder {
 
         /** Items are ordered ascending (default). */
-        ASCEND,
+        ASCEND ("ascend"),
         /** Items are ordered descending. */
-        DESCEND,
+        DESCEND ("descend");
+
+    private final String name;
+
+    SortOrder(String s) {
+        name = s;
+    }
+
+    public boolean equalsName(String otherName){
+        return (otherName != null) && name.equals(otherName);
+    }
+
+    public String toString(){
+        return name;
+    }
 
 }

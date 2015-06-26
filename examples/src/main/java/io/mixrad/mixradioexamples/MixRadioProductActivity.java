@@ -11,50 +11,43 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import io.mixrad.mixradiosdk.model.Artist;
+import io.mixrad.mixradiosdk.model.Product;
 
 /**
- * Created by mattaranha on 24/06/15.
+ * Created by mattaranha on 25/06/15.
  */
-public class MixRadioArtistActivity  extends FragmentActivity {
+public class MixRadioProductActivity extends FragmentActivity {
     MixRadioSDKPagerAdapter     mMixRadioSDKPagerAdapter;
     ViewPager                   mViewPager;
-    Artist                      mArtist;
+    Product                     mProduct;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String artistString = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        mArtist = new Gson().fromJson(artistString, Artist.class);
+        String productString = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        mProduct = new Gson().fromJson(productString, Product.class);
 
-        setTitle(mArtist.name);
+        setTitle(mProduct.name);
 
         final ActionBar actionBar = getActionBar();
         final ArrayList<Fragment> fragment_list = new ArrayList<Fragment>();
 
-        MixRadioOverviewFragment artistOverview = new MixRadioOverviewFragment();
-        MixRadioGenericFragment topSongs = new MixRadioGenericFragment();
-        MixRadioGenericFragment similarArtists = new MixRadioGenericFragment();
+        MixRadioOverviewFragment overview = new MixRadioOverviewFragment();
+        MixRadioGenericFragment similarProducts = new MixRadioGenericFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(MainActivity.EXTRA_MESSAGE, new Gson().toJson(mArtist));
-        artistOverview.setArguments(args);
+        args.putSerializable(MainActivity.EXTRA_MESSAGE, new Gson().toJson(mProduct));
+        overview.setArguments(args);
 
         args = new Bundle();
-        MainActivity.MixRadioMode mode = MainActivity.MixRadioMode.MixRadioMode_TopSongs;
+        MainActivity.MixRadioMode mode = MainActivity.MixRadioMode.MixRadioMode_SimilarProducts;
         args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        topSongs.setArguments(args);
+        similarProducts.setArguments(args);
 
-        args = new Bundle();
-        mode = MainActivity.MixRadioMode.MixRadioMode_SimilarArtists;
-        args.putSerializable(MainActivity.EXTRA_MESSAGE, mode);
-        similarArtists.setArguments(args);
-
-        fragment_list.add(artistOverview);
-        fragment_list.add(topSongs);
-        fragment_list.add(similarArtists);
+        fragment_list.add(overview);
+        fragment_list.add(similarProducts);
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -85,12 +78,10 @@ public class MixRadioArtistActivity  extends FragmentActivity {
 
             @Override
             public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-
             }
 
             @Override
             public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-
             }
         };
 
@@ -99,19 +90,13 @@ public class MixRadioArtistActivity  extends FragmentActivity {
 
         actionBar.addTab(
                 actionBar.newTab()
-                        .setText(getString(R.string.artist_overview))
+                        .setText(getString(R.string.album_overview))
                         .setTabListener(tabListener)
         );
 
         actionBar.addTab(
                 actionBar.newTab()
-                        .setText(getString(R.string.top_songs))
-                        .setTabListener(tabListener)
-        );
-
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText(getString(R.string.artist_similar))
+                        .setText(getString(R.string.album_similar))
                         .setTabListener(tabListener)
         );
     }

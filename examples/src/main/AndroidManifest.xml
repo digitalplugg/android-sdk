@@ -28,10 +28,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".MixRadioAPIActivity"
-            android:label="API Activity">
+            android:label="@string/app_name">
         </activity>
-        <activity android:name=".MixRadioGenresActivity"
-            android:label="Genres Activity">
+        <activity android:name=".MixRadioGenresActivity">
+        </activity>
+        <activity android:name=".MixRadioArtistActivity">
+        </activity>
+        <activity android:name=".MixRadioProductActivity">
+        </activity>
+        <activity android:name=".MixRadioMixesActivity">
         </activity>
         <activity android:name=".MixRadioSearchActivity">
             <intent-filter>

@@ -21,7 +21,6 @@
             android:layout_width="match_parent"
             android:text="@string/reset_country"
             android:id="@+id/button_reset_country"
-            android:onClick="buttonPressed"
              />
 
         <TextView
@@ -74,7 +73,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/top_albums"
+            android:text="@string/new_albums"
             android:id="@+id/button_new_albums"
             android:onClick="buttonPressed"/>
         <TextView

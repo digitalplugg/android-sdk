@@ -29,9 +29,15 @@
     <string name="search">Search</string>
     <string name="search_artist">Search Artist</string>
     <string name="get_mix_groups">Get Mix Groups</string>
+    <string name="mix_groups">Mix Groups</string>
 
     <string name="reset_country">Reset Country</string>
 
     <string name="artist_overview">Artist</string>
     <string name="artist_similar">Similar Artists</string>
+
+    <string name="album_overview">Details</string>
+    <string name="album_similar">Similar Products</string>
+
+    <string name="network_failed">Sorry, we\'ve had problems connecting to MixRadio</string>
 </resources>

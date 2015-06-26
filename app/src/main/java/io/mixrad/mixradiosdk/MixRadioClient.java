@@ -13,10 +13,12 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.mixrad.mixradiosdk.Util.ArtistDeserializer;
 import io.mixrad.mixradiosdk.Util.ArtistSerializer;
+import io.mixrad.mixradiosdk.Util.MixClassDeserializer;
 import io.mixrad.mixradiosdk.Util.MusicItemDeserializer;
 import io.mixrad.mixradiosdk.Util.ProductDeserializer;
 import io.mixrad.mixradiosdk.model.Artist;
@@ -25,7 +27,9 @@ import io.mixrad.mixradiosdk.model.Genre;
 import io.mixrad.mixradiosdk.model.MixClass;
 import io.mixrad.mixradiosdk.model.MixGroup;
 import io.mixrad.mixradiosdk.model.MusicItem;
+import io.mixrad.mixradiosdk.model.OrderBy;
 import io.mixrad.mixradiosdk.model.Product;
+import io.mixrad.mixradiosdk.model.SortOrder;
 import io.mixrad.mixradiosdk.model.UserEvent;
 import retrofit.Callback;
 import retrofit.ErrorHandler;
@@ -45,10 +49,31 @@ public class MixRadioClient {
     private final MixRadioService apiService;
     private final MixRadioService secureApiService;
 
+    private String              mCountryCode;
+
+    public MixRadioClient(String apiKey)
+    {
+        this(apiKey, null);
+    }
+
     public MixRadioClient(String apiKey, String countryCode) {
 
 
+        if(countryCode == null)
+        {
+            // convert our country code to ISO 3166-1 alpha-2
+            String countryCodeISO3 = Locale.getDefault().getISO3Country();
 
+            String[] countries = Locale.getISOCountries();
+            HashMap<String, Locale> localeMap = new HashMap<String, Locale>(countries.length);
+            for (String country : countries) {
+                Locale locale = new Locale("", country);
+                localeMap.put(locale.getISO3Country().toUpperCase(), locale);
+            }
+            countryCode = localeMap.get(countryCodeISO3).getCountry().toLowerCase();
+        }
+
+        mCountryCode = countryCode;
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
@@ -57,12 +82,15 @@ public class MixRadioClient {
                 .registerTypeAdapter(Artist.class, new ArtistDeserializer())
                 .registerTypeAdapter(MusicItem.class, new MusicItemDeserializer())
                 .registerTypeAdapter(Product.class, new ProductDeserializer())
+                .registerTypeAdapter(MixClass.class, new MixClassDeserializer())
                 .create();
 
         GsonConverter converter = new GsonConverter(gson);
         MixRadioInterceptor intercept = new MixRadioInterceptor();
         intercept.setApiKey(apiKey);
         intercept.setCountryCode(countryCode);
+
+
 
         MixRadioUserInterceptor userIntercept = new MixRadioUserInterceptor();
         userIntercept.setUserId("");
@@ -97,6 +125,11 @@ public class MixRadioClient {
 
         apiService = restAdapter.create(MixRadioService.class);
         secureApiService = secureRestAdapter.create(MixRadioService.class);
+    }
+
+    public String getCountryCode()
+    {
+        return mCountryCode;
     }
 
     public MixRadioService getApiService() {
@@ -213,7 +246,7 @@ public class MixRadioClient {
         apiService.getTopProductsForGenre(genre_id, category,options, callback);
     }
 
-    public void getArtistProducts(String id, Artist artist,Category category, String orderBy, String sortOrder, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
+    public void getArtistProducts(String id, Artist artist,Category category, OrderBy orderBy, SortOrder sortOrder, int startIndex,int itemsPerPage,Callback<List<Product>> callback) {
         Map<String, String> options = new HashMap<String, String>();
         String artist_id = "";
         if(id != null && !id.equals("")) {
@@ -222,8 +255,8 @@ public class MixRadioClient {
             artist_id = artist.id;
         }
         options.put("category", category.toString());
-        options.put("orderBy", orderBy);
-        options.put("sortOrder", sortOrder);
+        options.put("orderBy", orderBy.toString());
+        options.put("sortOrder", sortOrder.toString());
         options.put("startIndex", ""+startIndex);
 
         options.put("itemsPerPage", ""+itemsPerPage);
@@ -318,9 +351,9 @@ public class MixRadioClient {
         apiService.getSimilarProducts(id, options, callback);
     }
 
-    public Uri getTrackSampleUri(String id) {
+    public String getTrackSampleUri(String id) {
 
-        return apiService.getTrackSampleUri(id);
+        return BASE_URL+"/"+mCountryCode+"/products/"+id+"/sample";
     }
 
     public void getUserPlayHistory(String action,  int startIndex,int itemsPerPage,Callback<List<UserEvent>> callback) {

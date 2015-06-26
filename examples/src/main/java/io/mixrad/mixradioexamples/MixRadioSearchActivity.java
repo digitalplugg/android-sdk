@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class MixRadioSearchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_genericlist);
 
-        mixRadioClient = new MixRadioClient(MainActivity.MixRadioClientId, "gb");
+        mixRadioClient = MainActivity.getMixRadioClient();
 
         Intent intent = getIntent();
         searchMode = (MixRadioMode) intent.getSerializableExtra(MainActivity.EXTRA_MESSAGE);
@@ -81,10 +82,20 @@ public class MixRadioSearchActivity extends Activity {
                 else if(o instanceof Artist)
                 {
                     Log.d("SEARCH", "Got Artist");
+                    Artist a = (Artist) o;
+
+                    Intent intent = new Intent(getApplicationContext(), MixRadioArtistActivity.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, new Gson().toJson(a));
+                    startActivity(intent);
                 }
                 else if(o instanceof Product)
                 {
                     Log.d("SEARCH", "Got Product");
+                    Product p = (Product) o;
+
+                    Intent intent = new Intent(getApplicationContext(), MixRadioProductActivity.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, new Gson().toJson(p));
+                    startActivity(intent);
                 }
                 else if(o instanceof Genre)
                 {
@@ -152,9 +163,9 @@ public class MixRadioSearchActivity extends Activity {
     private void performSearch(String query)
     {
         progress = new ProgressDialog(this);
-        progress.setMessage(getString(R.string.search_title));
+        if(progress != null) progress.setMessage(getString(R.string.search_title));
 
-        progress.show();
+        if(progress != null) progress.show();
 
         if(searchMode == MixRadioMode.MixRadioMode_Search)
         {
@@ -164,13 +175,13 @@ public class MixRadioSearchActivity extends Activity {
                     mixRadioData.clear();
                     mixRadioData.addAll(musicItems);
                     updateListView();
-                    progress.cancel();
+                    if(progress != null) progress.cancel();
                 }
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
                     Toast.makeText(MixRadioSearchActivity.this, retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    progress.cancel();
+                    if(progress != null) progress.cancel();
                 }
             });
         }
@@ -182,13 +193,13 @@ public class MixRadioSearchActivity extends Activity {
                     mixRadioData.clear();
                     mixRadioData.addAll(artists);
                     updateListView();
-                    progress.cancel();
+                    if(progress != null) progress.cancel();
                 }
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
                     Toast.makeText(MixRadioSearchActivity.this, retrofitError.getResponse().getReason(), Toast.LENGTH_LONG).show();
-                    progress.cancel();
+                    if(progress != null) progress.cancel();
                 }
             });
         }
@@ -200,7 +211,7 @@ public class MixRadioSearchActivity extends Activity {
         adapter.addAll(mixRadioData);
         adapter.notifyDataSetChanged();
 
-        progress.cancel();
+        if(progress != null) progress.cancel();
     }
 
 

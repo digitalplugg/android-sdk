@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Genre;
 import io.mixrad.mixradiosdk.model.Location;
+import io.mixrad.mixradiosdk.model.MixClass;
 import io.mixrad.mixradiosdk.model.MusicItem;
 import io.mixrad.mixradiosdk.model.Product;
 
@@ -37,6 +38,11 @@ public class MusicItemDeserializer implements JsonDeserializer<MusicItem> {
         {
             Product product = context.deserialize(musicItemStr, Product.class);
             musicItem = (MusicItem)product;
+        }
+        else if(type.equals("radiostation"))
+        {
+            MixClass mixClass = context.deserialize(musicItemStr, MixClass.class);
+            musicItem = (MixClass)mixClass;
         }
         else
         {
