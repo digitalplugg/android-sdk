@@ -370,7 +370,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void TestMixes() throws Exception
+    public void testMixes() throws Exception
     {
         client.getMixGroups(startIndex, itemsPerPage, new Callback<List<MixGroup>>() {
             @Override
