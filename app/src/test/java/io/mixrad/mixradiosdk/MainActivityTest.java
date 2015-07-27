@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Response;
 
 import org.junit.Before;
@@ -19,6 +20,9 @@ import java.util.List;
 
 import io.mixrad.mixradiosdk.MixRadioActivity;
 import io.mixrad.mixradiosdk.MixRadioClient;
+import io.mixrad.mixradiosdk.Util.ArtistDeserializer;
+import io.mixrad.mixradiosdk.Util.ArtistSerializer;
+import io.mixrad.mixradiosdk.Util.ProductDeserializer;
 import io.mixrad.mixradiosdk.model.Artist;
 import io.mixrad.mixradiosdk.model.Category;
 import io.mixrad.mixradiosdk.model.Genre;
@@ -39,6 +43,7 @@ import static org.junit.Assert.assertTrue;
 public class MainActivityTest {
 
     MixRadioClient client;
+    Gson           gson;
 
     String myApiKey = "0ffa393383247d8ed7835e72de69f6a8";
     final int itemsPerPage = 10;
@@ -48,6 +53,15 @@ public class MainActivityTest {
     public void setup() throws Exception {
 
         client = new MixRadioClient(myApiKey, "gb");
+
+        gson = new GsonBuilder()
+                .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
+                .registerTypeAdapterFactory(new ItemTypeAdapterFactory())
+                .registerTypeAdapter(Artist.class, new ArtistSerializer())
+                .registerTypeAdapter(Artist.class, new ArtistDeserializer())
+                .registerTypeAdapter(Product.class, new ProductDeserializer())
+                .create();
+
         //activity = Robolectric.setupActivity(MixRadioActivity.class);
         //assertNotNull("MixRadioActivity is not instantiated", activity);
         assertTrue(true);
@@ -194,8 +208,9 @@ public class MainActivityTest {
             }
         });
 
-        String productStr = "{ \"category\": { \"id\": \"Album\", \"name\": \"Album\" }, \"trackcount\": 31, \"name\": \"The Velvet Underground & Nico 45th Anniversary (Deluxe Edition)\", \"genres\": [ { \"id\": \"Rock\", \"name\": \"Rock\" } ], \"variousartists\": false, \"streetreleasedate\": \"2012-01-01T00:00:00Z\", \"thumbnails\": { \"50x50\": \"https://assets.mixrad.io/u/1.0/image/285032138/?w=50&q=40\", \"100x100\": \"https://assets.mixrad.io/u/1.0/image/285032138/?w=100&q=70\", \"200x200\": \"https://assets.mixrad.io/u/1.0/image/285032138/?w=200&q=90\", \"320x320\": \"https://assets.mixrad.io/u/1.0/image/285032138/?w=320&q=90\" }, \"creators\": { \"performers\": [ { \"name\": \"Nico\", \"id\": \"348785\" }, { \"name\": \"The Velvet Underground\", \"id\": \"1289\" } ] }, \"storeuri\": \"http://music.nokia.com/gb/r/product/-/-/36995407/\", \"id\": \"36995407\", \"type\": \"musiccollection\"}";
-        Product product = new Gson().fromJson(productStr, Product.class);
+
+        String productStr = "{ 'category': { 'id': 'Album', 'name': 'Album' }, 'trackcount': 31, 'name': 'The Velvet Underground & Nico 45th Anniversary (Deluxe Edition)', 'genres': [ { 'id': 'Rock', 'name': 'Rock' } ], 'variousartists': false, 'streetreleasedate': '2012-01-01T00:00:00Z', 'thumbnails': { '50x50': 'https://assets.mixrad.io/u/1.0/image/285032138/?w=50&q=40', '100x100': 'https://assets.mixrad.io/u/1.0/image/285032138/?w=100&q=70', '200x200': 'https://assets.mixrad.io/u/1.0/image/285032138/?w=200&q=90', '320x320': 'https://assets.mixrad.io/u/1.0/image/285032138/?w=320&q=90' }, 'creators': { 'performers': [ { 'name': 'Nico', 'id': '348785' }, { 'name': 'The Velvet Underground', 'id': '1289' } ] }, 'storeuri': 'http://music.nokia.com/gb/r/product/-/-/36995407/', 'id': '36995407', 'type': 'musiccollection'}";
+        Product product = gson.fromJson(productStr, Product.class);
 
         client.getSimilarProducts(null, product, startIndex, itemsPerPage, new Callback<List<Product>>() {
             @Override
@@ -274,8 +289,8 @@ public class MainActivityTest {
             }
         });
 
-        String artistStr = "{ \\\"category\\\": { \\\"id\\\": \\\"Artist\\\", \\\"name\\\": \\\"Artist\\\" }, \\\"name\\\": \\\"The Velvet Underground\\\", \\\"genres\\\": [ { \\\"id\\\": \\\"Rock\\\", \\\"name\\\": \\\"Rock\\\" } ], \\\"mbid\\\": \\\"94b0fb9d-a066-4823-b2ec-af1d324bcfcf\\\", \\\"sortname\\\": \\\"Velvet Underground, The\\\", \\\"thumbnails\\\": { \\\"640x640\\\": \\\"https://assets.mixrad.io/asset/artists/640x640/1289.jpg\\\", \\\"50x50\\\": \\\"https://assets.mixrad.io/asset/artists/50x50/1289.jpg\\\", \\\"320x320\\\": \\\"https://assets.mixrad.io/asset/artists/320x320/1289.jpg\\\", \\\"200x200\\\": \\\"https://assets.mixrad.io/asset/artists/200x200/1289.jpg\\\", \\\"120x120\\\": \\\"https://assets.mixrad.io/asset/artists/120x120/1289.jpg\\\", \\\"100x100\\\": \\\"https://assets.mixrad.io/asset/artists/100x100/1289.jpg\\\" }, \\\"origin\\\": { \\\"location\\\": { \\\"lat\\\": 40.78498, \\\"lng\\\": -73.83425 }, \\\"name\\\": \\\"New York City, United States\\\" }, \\\"country\\\": { \\\"id\\\": \\\"US\\\", \\\"name\\\": \\\"US\\\" }, \\\"storeuri\\\": \\\"http://music.nokia.com/gb/r/artist/-/1289/\\\", \\\"id\\\": \\\"1289\\\", \\\"type\\\": \\\"musicartist\\\"}";
-        Artist artist = new Gson().fromJson(artistStr, Artist.class);
+        String artistStr = "{ 'category': { 'id': 'Artist', 'name': 'Artist' }, 'name': 'The Velvet Underground', 'genres': [ { 'id': 'Rock', 'name': 'Rock' } ], 'mbid': '94b0fb9d-a066-4823-b2ec-af1d324bcfcf', 'sortname': 'Velvet Underground, The', 'thumbnails': { '640x640': 'https://assets.mixrad.io/asset/artists/640x640/1289.jpg', '50x50': 'https://assets.mixrad.io/asset/artists/50x50/1289.jpg', '320x320': 'https://assets.mixrad.io/asset/artists/320x320/1289.jpg', '200x200': 'https://assets.mixrad.io/asset/artists/200x200/1289.jpg', '120x120': 'https://assets.mixrad.io/asset/artists/120x120/1289.jpg', '100x100': 'https://assets.mixrad.io/asset/artists/100x100/1289.jpg' }, 'origin': { 'location': { 'lat': 40.78498, 'lng': -73.83425 }, 'name': 'New York City, United States' }, 'country': { 'id': 'US', 'name': 'US' }, 'storeuri': 'http://music.nokia.com/gb/r/artist/-/1289/', 'id': '1289', 'type': 'musicartist'}";
+        Artist artist = gson.fromJson(artistStr, Artist.class);
 
         client.getArtistProducts(null, artist, Category.ALBUM, OrderBy.NAME, SortOrder.ASCEND, startIndex, itemsPerPage, new Callback<List<Product>>() {
             @Override
@@ -305,8 +320,8 @@ public class MainActivityTest {
             }
         });
 
-        String artistStr = "{ \\\"category\\\": { \\\"id\\\": \\\"Artist\\\", \\\"name\\\": \\\"Artist\\\" }, \\\"name\\\": \\\"The Velvet Underground\\\", \\\"genres\\\": [ { \\\"id\\\": \\\"Rock\\\", \\\"name\\\": \\\"Rock\\\" } ], \\\"mbid\\\": \\\"94b0fb9d-a066-4823-b2ec-af1d324bcfcf\\\", \\\"sortname\\\": \\\"Velvet Underground, The\\\", \\\"thumbnails\\\": { \\\"640x640\\\": \\\"https://assets.mixrad.io/asset/artists/640x640/1289.jpg\\\", \\\"50x50\\\": \\\"https://assets.mixrad.io/asset/artists/50x50/1289.jpg\\\", \\\"320x320\\\": \\\"https://assets.mixrad.io/asset/artists/320x320/1289.jpg\\\", \\\"200x200\\\": \\\"https://assets.mixrad.io/asset/artists/200x200/1289.jpg\\\", \\\"120x120\\\": \\\"https://assets.mixrad.io/asset/artists/120x120/1289.jpg\\\", \\\"100x100\\\": \\\"https://assets.mixrad.io/asset/artists/100x100/1289.jpg\\\" }, \\\"origin\\\": { \\\"location\\\": { \\\"lat\\\": 40.78498, \\\"lng\\\": -73.83425 }, \\\"name\\\": \\\"New York City, United States\\\" }, \\\"country\\\": { \\\"id\\\": \\\"US\\\", \\\"name\\\": \\\"US\\\" }, \\\"storeuri\\\": \\\"http://music.nokia.com/gb/r/artist/-/1289/\\\", \\\"id\\\": \\\"1289\\\", \\\"type\\\": \\\"musicartist\\\"}";
-        Artist artist = new Gson().fromJson(artistStr, Artist.class);
+        String artistStr = "{ 'category': { 'id': 'Artist', 'name': 'Artist' }, 'name': 'The Velvet Underground', 'genres': [ { 'id': 'Rock', 'name': 'Rock' } ], 'mbid': '94b0fb9d-a066-4823-b2ec-af1d324bcfcf', 'sortname': 'Velvet Underground, The', 'thumbnails': { '640x640': 'https://assets.mixrad.io/asset/artists/640x640/1289.jpg', '50x50': 'https://assets.mixrad.io/asset/artists/50x50/1289.jpg', '320x320': 'https://assets.mixrad.io/asset/artists/320x320/1289.jpg', '200x200': 'https://assets.mixrad.io/asset/artists/200x200/1289.jpg', '120x120': 'https://assets.mixrad.io/asset/artists/120x120/1289.jpg', '100x100': 'https://assets.mixrad.io/asset/artists/100x100/1289.jpg' }, 'origin': { 'location': { 'lat': 40.78498, 'lng': -73.83425 }, 'name': 'New York City, United States' }, 'country': { 'id': 'US', 'name': 'US' }, 'storeuri': 'http://music.nokia.com/gb/r/artist/-/1289/', 'id': '1289', 'type': 'musicartist'}";
+        Artist artist = gson.fromJson(artistStr, Artist.class);
 
         client.getSimilarArtists(null, artist, startIndex, itemsPerPage, new Callback<List<Artist>>() {
             @Override
