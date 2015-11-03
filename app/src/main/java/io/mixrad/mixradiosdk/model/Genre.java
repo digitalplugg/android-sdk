@@ -5,10 +5,9 @@ package io.mixrad.mixradiosdk.model;
  */
 public class Genre {
 
-        /** The ID of the genre */
-        public String id;
-        /** The display name of the genre. */
-        public String name;
-
+    /** The ID of the genre */
+    public String id;
+    /** The display name of the genre. */
+    public String name;
 
 }

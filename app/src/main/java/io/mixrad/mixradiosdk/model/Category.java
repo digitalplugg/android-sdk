@@ -5,15 +5,14 @@ package io.mixrad.mixradiosdk.model;
  */
 public enum Category {
 
-        /** Denotes an Artist. */
-        ARTIST ("artist"),
-        /** Denotes an album product */
-        ALBUM ("album"),
-        /** Denotes a single product - typically 2 or 3 tracks bundled together. */
-        SINGLE ("single"),
-        /** Denotes a single track product. */
-        TRACK ("track");
-
+    /** Denotes an Artist. */
+    ARTIST ("artist"),
+    /** Denotes an album product */
+    ALBUM ("album"),
+    /** Denotes a single product - typically 2 or 3 tracks bundled together. */
+    SINGLE ("single"),
+    /** Denotes a single track product. */
+    TRACK ("track");
 
     private final String name;
 

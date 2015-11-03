@@ -5,10 +5,9 @@ package io.mixrad.mixradiosdk.model;
  */
 public class Price {
 
-        /** Gets the currency of the price */
-        public String currency;
-        /** Gets the numeric value of the price. */
-        public String value;
-
+    /** Gets the currency of the price */
+    public String currency;
+    /** Gets the numeric value of the price. */
+    public String value;
 
 }

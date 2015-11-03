@@ -5,12 +5,11 @@ package io.mixrad.mixradiosdk.model;
  */
 public class ListResponse extends Response{
 
-        /** Gets the start index the API call was asked for (when appropriate). */
-        public int startIndex;
-        /** Gets the items per page the API call was asked for (when appropriate). */
-        public int itemsPerPage;
-        /** Gets the total results available (when appropriate). */
-        public int totalResults;
-
+    /** Gets the start index the API call was asked for (when appropriate). */
+    public int startIndex;
+    /** Gets the items per page the API call was asked for (when appropriate). */
+    public int itemsPerPage;
+    /** Gets the total results available (when appropriate). */
+    public int totalResults;
 
 }

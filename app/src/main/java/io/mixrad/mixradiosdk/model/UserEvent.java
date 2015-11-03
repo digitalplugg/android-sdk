@@ -5,11 +5,11 @@ package io.mixrad.mixradiosdk.model;
  */
 public class UserEvent {
 
-        /** Gets the date time of the event. */
-        public String dateTime;
-        /** Gets the UserEventAction type (see below). */
-        public UserEventAction action;
-        /** Gets the product this action relates to. */
-        public Product product;
+    /** Gets the date time of the event. */
+    public String dateTime;
+    /** Gets the UserEventAction type (see below). */
+    public UserEventAction action;
+    /** Gets the product this action relates to. */
+    public Product product;
 
 }

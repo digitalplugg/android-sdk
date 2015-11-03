@@ -5,7 +5,7 @@ package io.mixrad.mixradiosdk.model;
  */
 public class MixClass extends MusicItem {
 
-        /** Gets a boolean indicating whether the mix has a parental advisory warning. */
-        public boolean parentalAdvisory;
+    /** Gets a boolean indicating whether the mix has a parental advisory warning. */
+    public boolean parentalAdvisory;
 
 }

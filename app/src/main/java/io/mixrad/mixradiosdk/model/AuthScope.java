@@ -5,9 +5,7 @@ package io.mixrad.mixradiosdk.model;
  */
 public enum AuthScope {
 
-        /** Read user play history */
-        READ_USER_PLAY_HISTORY,
-
-
+    /** Read user play history */
+    READ_USER_PLAY_HISTORY,
 
 }

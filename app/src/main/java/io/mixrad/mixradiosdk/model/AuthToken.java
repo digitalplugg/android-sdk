@@ -5,14 +5,15 @@ package io.mixrad.mixradiosdk.model;
  */
 public class AuthToken {
 
-        /** The current access token. */
-        String accessToken;
-        /** When the access token expires. */
-        String expiresUtc;
-        /** The refresh token that can be used to obtain a new AccessToken. */
-        String refreshToken;
-        /** The user’s country. */
-        String territory;
-        /** The user ID. */
-        String userId;
+    /** The current access token. */
+    String accessToken;
+    /** When the access token expires. */
+    String expiresUtc;
+    /** The refresh token that can be used to obtain a new AccessToken. */
+    String refreshToken;
+    /** The user’s country. */
+    String territory;
+    /** The user ID. */
+    String userId;
+
 }

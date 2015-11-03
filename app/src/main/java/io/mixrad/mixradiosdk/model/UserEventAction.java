@@ -5,10 +5,9 @@ package io.mixrad.mixradiosdk.model;
  */
 public enum UserEventAction {
 
-        /** The track completed playing. */
-        COMPLETE,
-        /** The track was skpped */
-        SKIPNEXT,
-
+    /** The track completed playing. */
+    COMPLETE,
+    /** The track was skpped */
+    SKIPNEXT,
 
 }

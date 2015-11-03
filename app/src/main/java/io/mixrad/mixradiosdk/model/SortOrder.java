@@ -5,10 +5,10 @@ package io.mixrad.mixradiosdk.model;
  */
 public enum SortOrder {
 
-        /** Items are ordered ascending (default). */
-        ASCEND ("ascend"),
-        /** Items are ordered descending. */
-        DESCEND ("descend");
+    /** Items are ordered ascending (default). */
+    ASCEND ("ascend"),
+    /** Items are ordered descending. */
+    DESCEND ("descend");
 
     private final String name;
 

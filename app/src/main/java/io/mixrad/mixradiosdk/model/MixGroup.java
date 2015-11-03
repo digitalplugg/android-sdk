@@ -5,10 +5,9 @@ package io.mixrad.mixradiosdk.model;
  */
 public class MixGroup {
 
-        /** The ID of the mixgroup */
-        public String id;
-        /** The display name of the mixgroup. */
-        public String name;
-
+    /** The ID of the mixgroup */
+    public String id;
+    /** The display name of the mixgroup. */
+    public String name;
 
 }

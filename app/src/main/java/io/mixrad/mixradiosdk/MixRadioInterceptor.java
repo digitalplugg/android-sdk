@@ -6,6 +6,7 @@ import retrofit.RequestInterceptor;
  * Created by RichardW on 05/03/15.
  */
 public class MixRadioInterceptor implements RequestInterceptor {
+
     private String apiKey;
     private String countryCode;
 
@@ -26,4 +27,5 @@ public class MixRadioInterceptor implements RequestInterceptor {
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
+
 }

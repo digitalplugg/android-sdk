@@ -24,7 +24,6 @@ import retrofit.http.QueryMap;
  */
 interface MixRadioService {
 
-
     @GET("/{countrycode}")
     public void search(
             @QueryMap Map<String, String> options,

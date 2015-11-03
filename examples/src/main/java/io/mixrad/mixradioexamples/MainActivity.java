@@ -48,7 +48,6 @@ public class MainActivity extends FragmentActivity {
     ViewPager                                   mViewPager;
     MixRadioAPIFragment                         fragmentAPI;
 
-
     public final static String MixRadioClientId = "0ffa393383247d8ed7835e72de69f6a8";
     public final static String EXTRA_MESSAGE = "io.mixrad.mixradioexplorer.MESSAGE";
     public final static int ITEMS_PER_PAGE = 30;

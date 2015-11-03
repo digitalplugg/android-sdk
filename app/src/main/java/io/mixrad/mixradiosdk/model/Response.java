@@ -8,6 +8,4 @@ class Response {
     public String error;
     public String result;
 
-
-
 }

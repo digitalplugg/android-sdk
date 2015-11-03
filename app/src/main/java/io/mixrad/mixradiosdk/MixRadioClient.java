@@ -356,42 +356,35 @@ public class MixRadioClient {
         return BASE_URL+"/"+mCountryCode+"/products/"+id+"/sample";
     }
 
-    public void getUserPlayHistory(String action,  int startIndex,int itemsPerPage,Callback<List<UserEvent>> callback) {
+    public void getUserPlayHistory(String action, int startIndex, int itemsPerPage,Callback<List<UserEvent>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
         options.put("action", ""+action);
         options.put("startIndex", ""+startIndex);
-
         options.put("itemsPerPage", ""+itemsPerPage);
 
         secureApiService.getUserPlayHistory(options, callback);
     }
 
-    public void getUserTopArtists(String startDate, String endDate,int itemsPerPage,Callback<List<Artist>> callback) {
+    public void getUserTopArtists(int startIndex, int itemsPerPage,Callback<List<Artist>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
-        options.put("startDate", ""+startDate);
-        options.put("endDate", ""+endDate);
+        options.put("startIndex", ""+startIndex);
         options.put("itemsPerPage", ""+itemsPerPage);
 
         secureApiService.getUserTopArtists(options, callback);
     }
 
-    public void getUserRecentMixes(String userid, String startDate, String endDate,int itemsPerPage,Callback<List<MixClass>> callback) {
+    public void getUserRecentMixes(int itemsPerPage,Callback<List<MixClass>> callback) {
         Map<String, String> options = new HashMap<String, String>();
 
-        options.put("startDate", ""+startDate);
-        options.put("endDate", ""+endDate);
         options.put("itemsPerPage", ""+itemsPerPage);
 
         secureApiService.getUserRecentMixes(options, callback);
     }
 
     public String getAuthenticationUri(String scope, String state) {
-
         return SECURE_URL+"/authorize?response_type=code&state="+state+"&scope="+scope;
-
-
     }
 
     public void getAuthenticationToken(String clientSecret, String authCode) {
